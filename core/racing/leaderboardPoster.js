@@ -16,11 +16,19 @@ const BANNER_MAP = {
 
 const DIVIDER = '━━━━━━━━━━━━━━━━━━';
 
-const CHANNEL_MAP = {
-    solo:    '🏆┃solo-board',
-    street:  '🏙️┃street-board',
-    circuit: '🏁┃circuit-board',
-    teams:   '👥┃team-board',
+const CHANNEL_ID_MAP = {
+    solo:    process.env.SOLO_BOARD_CHANNEL_ID,
+    street:  process.env.STREET_BOARD_CHANNEL_ID,
+    circuit: process.env.CIRCUIT_BOARD_CHANNEL_ID,
+    teams:   process.env.TEAM_BOARD_CHANNEL_ID,
+};
+
+// Fallback name-based lookup (emoji-normalized)
+const CHANNEL_NAME_MAP = {
+    solo:    'solo-board',
+    street:  'street-board',
+    circuit: 'circuit-board',
+    teams:   'team-board',
 };
 
 const COLORS = {
@@ -110,9 +118,15 @@ async function buildLeaderboardEmbed(type, weekly = false) {
 
 async function postLeaderboardToChannel(client, guild, type, weekly = false) {
     if (!guild) return;
-    const chanName = CHANNEL_MAP[type];
-    const channel  = guild.channels.cache.find((c) => c.name === chanName && c.isTextBased());
-    if (!channel) return;
+    const channelId = CHANNEL_ID_MAP[type];
+    const slug      = CHANNEL_NAME_MAP[type];
+    const channel   = channelId
+        ? guild.channels.cache.get(channelId)
+        : guild.channels.cache.find((c) => c.isTextBased() && c.name.endsWith(slug));
+    if (!channel) {
+        console.warn(`[leaderboard] channel not found for type="${type}" (id=${channelId || 'none'}, slug=${slug})`);
+        return;
+    }
 
     const embed = await buildLeaderboardEmbed(type, weekly);
 

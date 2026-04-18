@@ -20,7 +20,7 @@ async function main() {
 
     attachInteractionHandler(client, commands);
 
-    client.once('ready', () => {
+    client.once('clientReady', () => {
         installDiscordLogRelay(client, process.env.BOT_LOGS_CHANNEL_ID);
         console.log(`✅ ${client.user.tag} online — ${commands.size} commands loaded`);
 
