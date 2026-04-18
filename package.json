@@ -1,0 +1,19 @@
+{
+    "name": "midnight-pine-racing-bot",
+    "version": "1.0.0",
+    "description": "Midnight Pine Racing — Discord league management bot",
+    "main": "bot.js",
+    "scripts": {
+        "start": "node bot.js",
+        "test": "node --test core/racing/points.test.js",
+        "publish:banners": "node scripts/publish-banners.js"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "discord.js": "^14.16.0",
+        "dotenv": "^16.4.5",
+        "mongoose": "^7.8.0"
+    }
+}
