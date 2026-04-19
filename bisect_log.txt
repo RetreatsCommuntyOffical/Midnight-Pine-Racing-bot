@@ -1,0 +1,1608 @@
+Loaded 31 command(s).
+
+── Starting bisect ──────────────────────────────────────────
+
+  [depth=0 n=31] Testing 31 cmd(s): admin, balance, buy, challenge, embed-sync, event, force-sync, layout-refresh, leaderboard, linux-sync, mapleaderboard, member, music-admin, profile, race, radio, release, roles, run, runreview, season, setup-midnight-pine, shop, song, stats, team, teamstats, testing, ticket, top, upgrade ... ❌ FAIL — TIMEOUT
+  [depth=1 n=16] Testing 16 cmd(s): admin, balance, buy, challenge, embed-sync, event, force-sync, layout-refresh, leaderboard, linux-sync, mapleaderboard, member, music-admin, profile, race, radio ... ❌ FAIL — TIMEOUT
+  [depth=2 n=8] Testing 8 cmd(s): admin, balance, buy, challenge, embed-sync, event, force-sync, layout-refresh ... ❌ FAIL — TIMEOUT
+  [depth=3 n=4] Testing 4 cmd(s): admin, balance, buy, challenge ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): admin, balance ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): admin ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "admin" (admin.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): balance ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "balance" (balance.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): buy, challenge ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): buy ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "buy" (buy.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): challenge ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "challenge" (challenge.js)
+
+  [depth=3 n=4] Testing 4 cmd(s): embed-sync, event, force-sync, layout-refresh ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): embed-sync, event ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): embed-sync ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "embed-sync" (embed-sync.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): event ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "event" (event.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): force-sync, layout-refresh ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): force-sync ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "force-sync" (force-sync.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): layout-refresh ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "layout-refresh" (layout-refresh.js)
+
+  [depth=2 n=8] Testing 8 cmd(s): leaderboard, linux-sync, mapleaderboard, member, music-admin, profile, race, radio ... ❌ FAIL — TIMEOUT
+  [depth=3 n=4] Testing 4 cmd(s): leaderboard, linux-sync, mapleaderboard, member ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): leaderboard, linux-sync ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): leaderboard ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "leaderboard" (leaderboard.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): linux-sync ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "linux-sync" (linux-sync.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): mapleaderboard, member ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): mapleaderboard ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "mapleaderboard" (mapleaderboard.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): member ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "member" (member.js)
+
+  [depth=3 n=4] Testing 4 cmd(s): music-admin, profile, race, radio ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): music-admin, profile ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): music-admin ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "music-admin" (music-admin.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): profile ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "profile" (profile.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): race, radio ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): race ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "race" (race.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): radio ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "radio" (radio.js)
+
+  [depth=1 n=15] Testing 15 cmd(s): release, roles, run, runreview, season, setup-midnight-pine, shop, song, stats, team, teamstats, testing, ticket, top, upgrade ... ❌ FAIL — TIMEOUT
+  [depth=2 n=8] Testing 8 cmd(s): release, roles, run, runreview, season, setup-midnight-pine, shop, song ... ❌ FAIL — TIMEOUT
+  [depth=3 n=4] Testing 4 cmd(s): release, roles, run, runreview ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): release, roles ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): release ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "release" (release.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): roles ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "roles" (roles.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): run, runreview ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): run ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "run" (run.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): runreview ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "runreview" (runreview.js)
+
+  [depth=3 n=4] Testing 4 cmd(s): season, setup-midnight-pine, shop, song ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): season, setup-midnight-pine ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): season ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "season" (season.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): setup-midnight-pine ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "setup-midnight-pine" (setup-midnight-pine.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): shop, song ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): shop ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "shop" (shop.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): song ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "song" (song.js)
+
+  [depth=2 n=7] Testing 7 cmd(s): stats, team, teamstats, testing, ticket, top, upgrade ... ❌ FAIL — TIMEOUT
+  [depth=3 n=4] Testing 4 cmd(s): stats, team, teamstats, testing ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): stats, team ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): stats ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "stats" (stats.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): team ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "team" (team.js)
+
+  [depth=4 n=2] Testing 2 cmd(s): teamstats, testing ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): teamstats ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "teamstats" (teamstats.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): testing ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "testing" (testing.js)
+
+  [depth=3 n=3] Testing 3 cmd(s): ticket, top, upgrade ... ❌ FAIL — TIMEOUT
+  [depth=4 n=2] Testing 2 cmd(s): ticket, top ... ❌ FAIL — TIMEOUT
+  [depth=5 n=1] Testing 1 cmd(s): ticket ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "ticket" (ticket.js)
+
+  [depth=5 n=1] Testing 1 cmd(s): top ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "top" (top.js)
+
+  [depth=4 n=1] Testing 1 cmd(s): upgrade ... ❌ FAIL — TIMEOUT
+
+🔴 OFFENDING COMMAND FOUND: "upgrade" (upgrade.js)
+
+
+── Bisect complete ──────────────────────────────────────────
+
+🔴 31 offending command(s):
+   • admin  (admin.js)
+   • balance  (balance.js)
+   • buy  (buy.js)
+   • challenge  (challenge.js)
+   • embed-sync  (embed-sync.js)
+   • event  (event.js)
+   • force-sync  (force-sync.js)
+   • layout-refresh  (layout-refresh.js)
+   • leaderboard  (leaderboard.js)
+   • linux-sync  (linux-sync.js)
+   • mapleaderboard  (mapleaderboard.js)
+   • member  (member.js)
+   • music-admin  (music-admin.js)
+   • profile  (profile.js)
+   • race  (race.js)
+   • radio  (radio.js)
+   • release  (release.js)
+   • roles  (roles.js)
+   • run  (run.js)
+   • runreview  (runreview.js)
+   • season  (season.js)
+   • setup-midnight-pine  (setup-midnight-pine.js)
+   • shop  (shop.js)
+   • song  (song.js)
+   • stats  (stats.js)
+   • team  (team.js)
+   • teamstats  (teamstats.js)
+   • testing  (testing.js)
+   • ticket  (ticket.js)
+   • top  (top.js)
+   • upgrade  (upgrade.js)
+
+── Serialised data of offending command(s) ─────────────────
+
+admin:
+{
+  "name": "admin",
+  "description": "Staff administration controls.",
+  "options": [
+    {
+      "type": 1,
+      "name": "add-points",
+      "description": "Add or remove points from a player.",
+      "options": [
+        {
+          "type": 6,
+          "name": "user",
+          "description": "Target user",
+          "required": true
+        },
+        {
+          "type": 4,
+          "name": "delta",
+          "description": "Positive or negative amount",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "reason",
+          "description": "Reason for adjustment",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "ban-leaderboard",
+      "description": "Ban user from leaderboards.",
+      "options": [
+        {
+          "type": 6,
+          "name": "user",
+          "description": "Target user",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "reason",
+          "description": "Reason",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "unban-leaderboard",
+      "description": "Remove leaderboard ban.",
+      "options": [
+        {
+          "type": 6,
+          "name": "user",
+          "description": "Target user",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "reason",
+          "description": "Reason",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "reset-weekly",
+      "description": "Reset weekly points and boards.",
+      "options": [
+        {
+          "type": 3,
+          "name": "reason",
+          "description": "Reason",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "sync-roles",
+      "description": "Re-sync all auto-assigned roles for every registered driver."
+    }
+  ]
+}
+
+balance:
+{
+  "name": "balance",
+  "description": "View your current currency balance.",
+  "options": [
+    {
+      "type": 6,
+      "name": "user",
+      "description": "Optional user to inspect.",
+      "required": false
+    }
+  ]
+}
+
+buy:
+{
+  "name": "buy",
+  "description": "Buy an item from the shop.",
+  "options": [
+    {
+      "type": 3,
+      "name": "item",
+      "description": "Item ID from /shop.",
+      "required": true
+    }
+  ]
+}
+
+challenge:
+{
+  "name": "challenge",
+  "description": "Daily and weekly challenge tracking.",
+  "options": [
+    {
+      "type": 1,
+      "name": "list",
+      "description": "List your active challenges."
+    },
+    {
+      "type": 1,
+      "name": "claim",
+      "description": "Claim a completed challenge reward.",
+      "options": [
+        {
+          "type": 3,
+          "name": "id",
+          "description": "Challenge progress ID from /challenge list",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "claim-all",
+      "description": "Claim all completed challenges."
+    }
+  ]
+}
+
+embed-sync:
+{
+  "name": "embed-sync",
+  "description": "Sync embed payloads (local file or remote source).",
+  "defaultMemberPermissions": "8",
+  "options": [
+    {
+      "type": 1,
+      "name": "run",
+      "description": "Run embed sync now."
+    },
+    {
+      "type": 1,
+      "name": "status",
+      "description": "Show embed sync service status."
+    }
+  ]
+}
+
+event:
+{
+  "name": "event",
+  "description": "Manage scheduled race events.",
+  "options": [
+    {
+      "type": 1,
+      "name": "create",
+      "description": "Schedule a new race event.",
+      "options": [
+        {
+          "type": 3,
+          "name": "title",
+          "description": "Event title.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "starts_at",
+          "description": "ISO start time (e.g. 2026-04-20T22:00:00Z).",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "description",
+          "description": "Event description.",
+          "required": false
+        },
+        {
+          "type": 8,
+          "name": "ping_role",
+          "description": "Role to ping for reminders.",
+          "required": false
+        },
+        {
+          "type": 7,
+          "name": "channel",
+          "description": "Channel for reminders.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "list",
+      "description": "List upcoming scheduled events."
+    }
+  ]
+}
+
+force-sync:
+{
+  "name": "force-sync",
+  "description": "Force refresh all bot slash commands in Discord.",
+  "defaultMemberPermissions": "8"
+}
+
+layout-refresh:
+{
+  "name": "layout-refresh",
+  "description": "Rehome channels and refresh core embeds/leaderboards without recreating roles.",
+  "defaultMemberPermissions": "8"
+}
+
+leaderboard:
+{
+  "name": "leaderboard",
+  "description": "View live leaderboards.",
+  "options": [
+    {
+      "type": 3,
+      "name": "type",
+      "description": "Leaderboard type.",
+      "required": false,
+      "choices": [
+        {
+          "name": "Solo (All Points)",
+          "value": "solo"
+        },
+        {
+          "name": "Street (No Hesi)",
+          "value": "street"
+        },
+        {
+          "name": "Circuit (Races)",
+          "value": "circuit"
+        },
+        {
+          "name": "Teams",
+          "value": "teams"
+        }
+      ]
+    },
+    {
+      "type": 5,
+      "name": "weekly",
+      "description": "Show this week only.",
+      "required": false
+    },
+    {
+      "type": 5,
+      "name": "reset_weekly",
+      "description": "Staff: reset all weekly points now.",
+      "required": false
+    }
+  ]
+}
+
+linux-sync:
+{
+  "name": "linux-sync",
+  "description": "Sync embed payloads from the Linux server endpoint.",
+  "defaultMemberPermissions": "8",
+  "options": [
+    {
+      "type": 1,
+      "name": "run",
+      "description": "Run Linux embed sync now."
+    },
+    {
+      "type": 1,
+      "name": "status",
+      "description": "Show Linux sync service status."
+    }
+  ]
+}
+
+mapleaderboard:
+{
+  "name": "mapleaderboard",
+  "description": "Top speeds on maps or vehicle performance rankings.",
+  "options": [
+    {
+      "type": 1,
+      "name": "speeds",
+      "description": "Top speeds on a specific map.",
+      "options": [
+        {
+          "type": 3,
+          "name": "map",
+          "description": "Map name.",
+          "required": true
+        },
+        {
+          "type": 4,
+          "name": "limit",
+          "description": "Entries to show (max 25).",
+          "required": false,
+          "min_value": 1,
+          "max_value": 25
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "maps",
+      "description": "List all maps with run data."
+    },
+    {
+      "type": 1,
+      "name": "vehicles",
+      "description": "Vehicle performance rankings.",
+      "options": [
+        {
+          "type": 3,
+          "name": "vehicle",
+          "description": "Filter by specific vehicle.",
+          "required": false
+        },
+        {
+          "type": 4,
+          "name": "limit",
+          "description": "Entries to show (max 25).",
+          "required": false,
+          "min_value": 1,
+          "max_value": 25
+        }
+      ]
+    }
+  ]
+}
+
+member:
+{
+  "name": "member",
+  "description": "Membership status and sync controls.",
+  "options": [
+    {
+      "type": 1,
+      "name": "status",
+      "description": "View your membership status.",
+      "options": [
+        {
+          "type": 6,
+          "name": "user",
+          "description": "Optional user",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "sync",
+      "description": "Staff: manually sync membership tier/expiry.",
+      "options": [
+        {
+          "type": 6,
+          "name": "user",
+          "description": "Target user",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "tier",
+          "description": "Membership tier",
+          "required": true,
+          "choices": [
+            {
+              "name": "none",
+              "value": "none"
+            },
+            {
+              "name": "bronze",
+              "value": "bronze"
+            },
+            {
+              "name": "silver",
+              "value": "silver"
+            },
+            {
+              "name": "gold",
+              "value": "gold"
+            }
+          ]
+        },
+        {
+          "type": 3,
+          "name": "expires_at",
+          "description": "ISO date/time",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
+
+music-admin:
+{
+  "name": "music-admin",
+  "description": "Staff-only: manage radio stations, playlists, and now-playing.",
+  "options": [
+    {
+      "type": 1,
+      "name": "add-track",
+      "description": "Add a track to a station playlist.",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station",
+          "required": true,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM",
+              "value": "rush-fm"
+            }
+          ]
+        },
+        {
+          "type": 3,
+          "name": "title",
+          "description": "Track title",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "artist",
+          "description": "Artist name",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "url",
+          "description": "Stream / audio URL",
+          "required": true
+        },
+        {
+          "type": 4,
+          "name": "duration",
+          "description": "Duration in seconds (optional)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "remove-track",
+      "description": "Remove a track from a station by index.",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station",
+          "required": true,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM",
+              "value": "rush-fm"
+            }
+          ]
+        },
+        {
+          "type": 4,
+          "name": "index",
+          "description": "Track index (0-based)",
+          "required": true,
+          "min_value": 0
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "list-tracks",
+      "description": "List all tracks on a station.",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station",
+          "required": true,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM",
+              "value": "rush-fm"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "set-now-playing",
+      "description": "Manually set the current track shown for a station.",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station",
+          "required": true,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM",
+              "value": "rush-fm"
+            }
+          ]
+        },
+        {
+          "type": 3,
+          "name": "title",
+          "description": "Track title",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "artist",
+          "description": "Artist name",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "url",
+          "description": "URL (optional)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "announce",
+      "description": "Post a now-playing announcement for a station.",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station",
+          "required": true,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM",
+              "value": "rush-fm"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "reload",
+      "description": "Re-seed default station data if missing."
+    }
+  ]
+}
+
+profile:
+{
+  "name": "profile",
+  "description": "View your full racing profile.",
+  "options": [
+    {
+      "type": 6,
+      "name": "user",
+      "description": "Driver to inspect.",
+      "required": false
+    }
+  ]
+}
+
+race:
+{
+  "name": "race",
+  "description": "Race management.",
+  "options": [
+    {
+      "type": 1,
+      "name": "create",
+      "description": "Create a new race event.",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Race name.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "track",
+          "description": "Track name.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "join",
+      "description": "Join an open race.",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Race name to join.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "start",
+      "description": "Start a race (staff only).",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Race name.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "results",
+      "description": "Submit race results (staff only).",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Race name.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "results",
+          "description": "JSON array: [{\"discordId\":\"...\", \"position\":1}, ...]",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
+
+radio:
+{
+  "name": "radio",
+  "description": "MIDNIGHT PINE RACING radio system.",
+  "options": [
+    {
+      "type": 1,
+      "name": "list",
+      "description": "Show all available radio stations and what's playing."
+    },
+    {
+      "type": 1,
+      "name": "now",
+      "description": "Show current track across all stations."
+    },
+    {
+      "type": 1,
+      "name": "set-station",
+      "description": "Tune to a radio station and save your preference.",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station to tune into.",
+          "required": true,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM — Chill Night Drive",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM — Phonk & Drift",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM — High Energy",
+              "value": "rush-fm"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "off",
+      "description": "Turn off music for your session."
+    }
+  ]
+}
+
+release:
+{
+  "name": "release",
+  "description": "Midnight Pine Racing content drop system (staff only).",
+  "options": [
+    {
+      "type": 1,
+      "name": "map",
+      "description": "Post or schedule a map drop.",
+      "options": [
+        {
+          "type": 3,
+          "name": "title",
+          "description": "Map name.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "description",
+          "description": "Short description.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "image_url",
+          "description": "Map image URL.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "map_type",
+          "description": "e.g. Street Highway, Circuit.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "environment",
+          "description": "e.g. Night / City, Mountain.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "difficulty",
+          "description": "e.g. High Speed, Expert.",
+          "required": false
+        },
+        {
+          "type": 8,
+          "name": "ping_role",
+          "description": "Role to ping on drop.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "schedule_iso",
+          "description": "ISO datetime to auto-post.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "vehicle",
+      "description": "Post or schedule a vehicle drop.",
+      "options": [
+        {
+          "type": 3,
+          "name": "title",
+          "description": "Vehicle name.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "description",
+          "description": "Short description.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "image_url",
+          "description": "Vehicle image URL.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "vehicle_class",
+          "description": "e.g. Performance, Muscle.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "top_speed",
+          "description": "e.g. 210 MPH.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "handling",
+          "description": "e.g. Precision, Drift.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "vehicle_category",
+          "description": "e.g. Street, Track.",
+          "required": false
+        },
+        {
+          "type": 8,
+          "name": "ping_role",
+          "description": "Role to ping on drop.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "schedule_iso",
+          "description": "ISO datetime to auto-post.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "update",
+      "description": "Post or schedule a patch/update log.",
+      "options": [
+        {
+          "type": 3,
+          "name": "version",
+          "description": "Version tag, e.g. v1.2.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "changes",
+          "description": "\"Category: item, item | Category: item\"",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "image_url",
+          "description": "Optional banner image URL.",
+          "required": false
+        },
+        {
+          "type": 8,
+          "name": "ping_role",
+          "description": "Role to ping.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "schedule_iso",
+          "description": "ISO datetime to auto-post.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "sneak",
+      "description": "Post a sneak peek / hype teaser.",
+      "options": [
+        {
+          "type": 3,
+          "name": "description",
+          "description": "Hype text.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "image_url",
+          "description": "Teaser image URL.",
+          "required": false
+        },
+        {
+          "type": 8,
+          "name": "ping_role",
+          "description": "Role to ping.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "schedule_iso",
+          "description": "ISO datetime to auto-post.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "list",
+      "description": "List upcoming scheduled releases."
+    },
+    {
+      "type": 1,
+      "name": "post",
+      "description": "Immediately post a draft/scheduled release by ID.",
+      "options": [
+        {
+          "type": 3,
+          "name": "release_id",
+          "description": "Release MongoDB ID.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
+
+roles:
+{
+  "name": "roles",
+  "description": "Post the self-assignable role picker (staff only)."
+}
+
+run:
+{
+  "name": "run",
+  "description": "Manage No Hesi run sessions.",
+  "options": [
+    {
+      "type": 1,
+      "name": "start",
+      "description": "Start a No Hesi run session."
+    },
+    {
+      "type": 1,
+      "name": "end",
+      "description": "End your active run session."
+    },
+    {
+      "type": 1,
+      "name": "submit",
+      "description": "Submit your run results.",
+      "options": [
+        {
+          "type": 10,
+          "name": "distance_m",
+          "description": "Distance in meters.",
+          "required": true
+        },
+        {
+          "type": 4,
+          "name": "time_sec",
+          "description": "Time survived in seconds.",
+          "required": true
+        },
+        {
+          "type": 10,
+          "name": "top_speed",
+          "description": "Top speed reached.",
+          "required": true
+        },
+        {
+          "type": 4,
+          "name": "crashes",
+          "description": "Crash count.",
+          "required": true,
+          "min_value": 0
+        },
+        {
+          "type": 5,
+          "name": "clean_run",
+          "description": "Was this a clean run?",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "proof_url",
+          "description": "Screenshot URL.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "clip_url",
+          "description": "Video/clip URL.",
+          "required": false
+        },
+        {
+          "type": 5,
+          "name": "admin_verify",
+          "description": "Staff-only: verify this run now.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "map_name",
+          "description": "Map name (e.g. Midnight Expressway).",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "vehicle",
+          "description": "Vehicle used (e.g. Nissan GT-R R35).",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
+
+runreview:
+{
+  "name": "runreview",
+  "description": "Anti-cheat run review queue (staff only).",
+  "options": [
+    {
+      "type": 1,
+      "name": "pending",
+      "description": "List pending run submissions."
+    },
+    {
+      "type": 1,
+      "name": "approve",
+      "description": "Approve a run submission.",
+      "options": [
+        {
+          "type": 3,
+          "name": "id",
+          "description": "Submission ID.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "reject",
+      "description": "Reject a run submission (rolls back points).",
+      "options": [
+        {
+          "type": 3,
+          "name": "id",
+          "description": "Submission ID.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
+
+season:
+{
+  "name": "season",
+  "description": "Seasonal championship management (admin only).",
+  "options": [
+    {
+      "type": 1,
+      "name": "end",
+      "description": "Archive current season and reset all points.",
+      "options": [
+        {
+          "type": 3,
+          "name": "tag",
+          "description": "Season tag, e.g. S1 or 2026-Spring.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "history",
+      "description": "View past season archives."
+    }
+  ]
+}
+
+setup-midnight-pine:
+{
+  "name": "setup-midnight-pine",
+  "description": "Auto-create all Midnight Pine Racing roles, channels, and categories.",
+  "defaultMemberPermissions": "8"
+}
+
+shop:
+{
+  "name": "shop",
+  "description": "Browse and buy from the MIDNIGHT Shop."
+}
+
+song:
+{
+  "name": "song",
+  "description": "Get current song information.",
+  "options": [
+    {
+      "type": 1,
+      "name": "now",
+      "description": "Show what's playing on your station (or a specific one).",
+      "options": [
+        {
+          "type": 3,
+          "name": "station",
+          "description": "Station to check — defaults to your saved preference.",
+          "required": false,
+          "choices": [
+            {
+              "name": "🌙 MIDNIGHT FM",
+              "value": "midnight-fm"
+            },
+            {
+              "name": "🔥 DRIFT FM",
+              "value": "drift-fm"
+            },
+            {
+              "name": "⚡ RUSH FM",
+              "value": "rush-fm"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+stats:
+{
+  "name": "stats",
+  "description": "View driver stats and rank.",
+  "options": [
+    {
+      "type": 6,
+      "name": "user",
+      "description": "Driver to look up (defaults to you).",
+      "required": false
+    }
+  ]
+}
+
+team:
+{
+  "name": "team",
+  "description": "Team management.",
+  "options": [
+    {
+      "type": 1,
+      "name": "create",
+      "description": "Create a new team.",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Team name.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "join",
+      "description": "Join an existing team.",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Team name.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "stats",
+      "description": "View your team stats.",
+      "options": [
+        {
+          "type": 3,
+          "name": "name",
+          "description": "Team name (optional — defaults to your team).",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "roster",
+      "description": "Refresh and show the team roster board."
+    }
+  ]
+}
+
+teamstats:
+{
+  "name": "teamstats",
+  "description": "View detailed stats for any team.",
+  "options": [
+    {
+      "type": 3,
+      "name": "team",
+      "description": "Team name to look up.",
+      "required": true
+    }
+  ]
+}
+
+testing:
+{
+  "name": "testing",
+  "description": "Manage early-access testing content (staff only).",
+  "options": [
+    {
+      "type": 1,
+      "name": "announce",
+      "description": "Post early-access content to the testing channel.",
+      "options": [
+        {
+          "type": 3,
+          "name": "title",
+          "description": "Map, vehicle, or feature name.",
+          "required": true
+        },
+        {
+          "type": 3,
+          "name": "description",
+          "description": "What testers should try.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "image_url",
+          "description": "Preview image URL.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "feedback_channel",
+          "description": "Channel name for feedback.",
+          "required": false
+        },
+        {
+          "type": 3,
+          "name": "access_type",
+          "description": "e.g. Map, Vehicle, Feature.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "name": "assign",
+      "description": "Grant or revoke the Tester role.",
+      "options": [
+        {
+          "type": 6,
+          "name": "member",
+          "description": "Discord member.",
+          "required": true
+        },
+        {
+          "type": 5,
+          "name": "grant",
+          "description": "true = grant, false = revoke.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
+
+ticket:
+{
+  "options": [
+    {
+      "type": 1,
+      "name": "setup",
+      "description": "Post the ticket panel in the current channel",
+      "options": []
+    },
+    {
+      "type": 1,
+      "name": "close",
+      "description": "Close this ticket channel",
+      "options": []
+    },
+    {
+      "type": 1,
+      "name": "claim",
+      "description": "Claim this ticket as your own",
+      "options": []
+    }
+  ],
+  "name": "ticket",
+  "description": "Ticket system management",
+  "default_member_permissions": "16",
+  "type": 1
+}
+
+top:
+{
+  "name": "top",
+  "description": "Show top players by selected leaderboard type.",
+  "options": [
+    {
+      "type": 3,
+      "name": "type",
+      "description": "Leaderboard type",
+      "required": false,
+      "choices": [
+        {
+          "name": "Drift (Street)",
+          "value": "street"
+        },
+        {
+          "name": "Overall",
+          "value": "solo"
+        },
+        {
+          "name": "Circuit",
+          "value": "circuit"
+        }
+      ]
+    },
+    {
+      "type": 4,
+      "name": "limit",
+      "description": "How many players (1-25)",
+      "required": false,
+      "min_value": 1,
+      "max_value": 25
+    },
+    {
+      "type": 5,
+      "name": "weekly",
+      "description": "Use weekly board",
+      "required": false
+    }
+  ]
+}
+
+upgrade:
+{
+  "name": "upgrade",
+  "description": "Upgrade your membership tier using in-bot currency.",
+  "options": [
+    {
+      "type": 3,
+      "name": "tier",
+      "description": "Tier to upgrade to",
+      "required": true,
+      "choices": [
+        {
+          "name": "bronze",
+          "value": "bronze"
+        },
+        {
+          "name": "silver",
+          "value": "silver"
+        },
+        {
+          "name": "gold",
+          "value": "gold"
+        }
+      ]
+    },
+    {
+      "type": 4,
+      "name": "months",
+      "description": "Number of months (default 1)",
+      "required": false,
+      "min_value": 1,
+      "max_value": 12
+    }
+  ]
+}
+
+── Clearing guild commands (cleanup) ────────────────────────

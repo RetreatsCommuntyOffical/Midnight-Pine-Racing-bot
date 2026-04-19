@@ -27,7 +27,7 @@ module.exports = {
 
 // ── /ticket setup ─────────────────────────────────────────────────────────────
 async function setupPanel(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
     const { postSupportHubEmbed } = require('../core/ticketService');
     await postSupportHubEmbed(interaction.client, interaction.channelId);
     await interaction.editReply({ content: '✅ Support Hub panel posted.' });

@@ -34,7 +34,7 @@ module.exports = {
             if (sub === 'maps') {
                 const maps = await getMapIndex();
                 if (!maps.length) {
-                    await interaction.reply({ content: 'No map data yet. Submit runs with `/run submit map_name:...`.', ephemeral: true });
+                    await interaction.reply({ content: 'No map data yet. Submit runs with `/run submit map_name:...`.', flags: 64 });
                     return;
                 }
                 const embed = new EmbedBuilder()
@@ -55,7 +55,7 @@ module.exports = {
                 const rows = await getMapLeaderboard(matched, limit);
 
                 if (!rows.length) {
-                    await interaction.reply({ content: `No verified runs on **${matched}** yet.`, ephemeral: true });
+                    await interaction.reply({ content: `No verified runs on **${matched}** yet.`, flags: 64 });
                     return;
                 }
 
@@ -84,7 +84,7 @@ module.exports = {
                 const rows          = await getVehicleLeaderboard(limit, vehicleFilter || undefined);
 
                 if (!rows.length) {
-                    await interaction.reply({ content: 'No vehicle data yet. Submit runs with `/run submit vehicle:...`.', ephemeral: true });
+                    await interaction.reply({ content: 'No vehicle data yet. Submit runs with `/run submit vehicle:...`.', flags: 64 });
                     return;
                 }
 
@@ -111,7 +111,7 @@ module.exports = {
                 await interaction.reply({ embeds: [embed] });
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

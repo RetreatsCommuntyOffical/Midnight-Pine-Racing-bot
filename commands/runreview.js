@@ -1,4 +1,6 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+'use strict';
+const { warnEmbed, successEmbed, dangerEmbed, rows, Buttons, DIVIDER } = require('../core/ui/theme');
+const { PermissionFlagsBits } = require('discord.js');
 const { listPendingRunSubmissions, reviewRunSubmission } = require('../core/racing/service');
 
 module.exports = {
@@ -20,7 +22,7 @@ module.exports = {
 
     async execute(interaction) {
         if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-            await interaction.reply({ content: 'Staff only.', ephemeral: true });
+            await interaction.reply({ content: 'Staff only.', flags: 64 });
             return;
         }
 
@@ -30,16 +32,27 @@ module.exports = {
             if (sub === 'pending') {
                 const subs = await listPendingRunSubmissions(10);
                 if (!subs.length) {
-                    await interaction.reply({ content: '✅ No pending submissions.', ephemeral: true });
+                    await interaction.reply({
+                        embeds: [successEmbed({ title: '\u2705 Queue Clear', description: 'No pending run submissions.' })],
+                        flags: 64,
+                    });
                     return;
                 }
-                const lines = subs.map((s) => {
-                    const proofLink = s.proofUrl ? `[proof](${s.proofUrl})` : '';
-                    const clipLink  = s.clipUrl  ? `[clip](${s.clipUrl})`   : '';
-                    const links     = [proofLink, clipLink].filter(Boolean).join(' · ');
-                    return `\`${s._id}\` <@${s.discordId}> — ${s.distanceMeters}m · ${s.topSpeed} mph · ${s.crashes} crash${s.crashes !== 1 ? 'es' : ''} · ${s.cleanRun ? 'clean' : 'not clean'} ${links ? `· ${links}` : ''}`;
+                const fields = subs.map((s) => {
+                    const links = [s.proofUrl && `[proof](${s.proofUrl})`, s.clipUrl && `[clip](${s.clipUrl})`].filter(Boolean).join(' \u00b7 ');
+                    return {
+                        name:  `\`${s._id}\``,
+                        value: `<@${s.discordId}> \u2014 ${s.distanceMeters}m \u00b7 ${s.topSpeed} mph \u00b7 ${s.crashes} crash${s.crashes !== 1 ? 'es' : ''} \u00b7 ${s.cleanRun ? '\u2705 clean' : '\u274c dirty'}${links ? ` \u00b7 ${links}` : ''}`,
+                        inline: false,
+                    };
                 });
-                await interaction.reply({ content: `**Pending runs (${subs.length}):**\n${lines.join('\n')}`, ephemeral: true });
+                const embed = warnEmbed({
+                    title:       `\u23f3 Pending Runs (${subs.length})`,
+                    description: DIVIDER,
+                    fields,
+                    footer:      'Use /runreview approve id:<id> or reject id:<id>',
+                });
+                await interaction.reply({ embeds: [embed], flags: 64 });
                 return;
             }
 
@@ -47,14 +60,19 @@ module.exports = {
             const approve      = sub === 'approve';
             const result       = await reviewRunSubmission({ submissionId, approve, reviewerDiscordId: interaction.user.id });
 
-            await interaction.reply({
-                content: approve
-                    ? `✅ Run \`${result._id}\` approved for <@${result.discordId}>.`
-                    : `🗑️ Run \`${result._id}\` rejected. Points rolled back for <@${result.discordId}>.`,
-                ephemeral: true,
-            });
+            const embed = approve
+                ? successEmbed({
+                    title:       '\u2705 Run Approved',
+                    description: `Run \`${result._id}\` verified for <@${result.discordId}>.`,
+                })
+                : dangerEmbed({
+                    title:       '\uD83D\uDDD1\uFE0F Run Rejected',
+                    description: `Run \`${result._id}\` rejected. Points rolled back for <@${result.discordId}>.`,
+                });
+
+            await interaction.reply({ embeds: [embed], flags: 64 });
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

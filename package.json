@@ -6,6 +6,8 @@
     "scripts": {
         "start": "node bot.js",
         "test": "node --test core/racing/points.test.js",
+        "deploy:commands": "node deploy-commands.js",
+        "force:update-all": "node scripts/force-update-all.js",
         "publish:banners": "node scripts/publish-banners.js"
     },
     "engines": {

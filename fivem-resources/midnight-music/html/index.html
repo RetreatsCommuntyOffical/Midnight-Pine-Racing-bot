@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIDNIGHT PINE — Radio HUD</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="hud" class="hud hidden">
+        <div id="vignette" class="vignette"></div>
+
+        <section class="zone top-center" aria-label="Combo system">
+            <div id="comboShell" class="combo-shell">
+                <div class="combo-label">COMBO</div>
+                <div id="comboValue" class="combo-value">0</div>
+                <div class="combo-meta">
+                    <span id="multiplierValue" class="multiplier">x1.0</span>
+                    <span id="timerValue" class="timer">00:00</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="zone left-side" aria-label="XP and rank">
+            <div class="rank-wrap">
+                <div class="rank-label">RANK</div>
+                <div id="rankValue" class="rank-value">CERTIFIED</div>
+                <div id="proBadge" class="pro-badge hidden">PRO</div>
+            </div>
+            <div class="xp-wrap">
+                <div class="xp-topline">
+                    <span>XP</span>
+                    <span id="xpPercentText">0%</span>
+                </div>
+                <div class="xp-bar">
+                    <div id="xpFill" class="xp-fill"></div>
+                </div>
+                <div id="xpGain" class="xp-gain hidden">+0 XP</div>
+            </div>
+        </section>
+
+        <section class="zone right-side" aria-label="Speed cluster">
+            <div id="speedValue" class="speed-value">0 MPH</div>
+            <div class="rpm-wrap">
+                <div class="rpm-label">RPM</div>
+                <div class="rpm-bar">
+                    <div id="rpmFill" class="rpm-fill"></div>
+                </div>
+            </div>
+            <div id="gearValue" class="gear-value">N</div>
+        </section>
+
+        <section class="zone bottom-center" aria-label="Points and taps">
+            <div id="driftPoints" class="drift-points">+0</div>
+            <div class="tap-wrap">
+                <span id="tapLabel" class="tap-label">TAPS:</span>
+                <div id="tapDots" class="tap-dots">
+                    <span class="tap-dot"></span>
+                    <span class="tap-dot"></span>
+                    <span class="tap-dot"></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="toast hidden" id="announceToast"></div>
+    </div>
+
+    <audio id="audioPlayer" crossorigin="anonymous" preload="auto"></audio>
+
+    <script src="app.js"></script>
+</body>
+</html>

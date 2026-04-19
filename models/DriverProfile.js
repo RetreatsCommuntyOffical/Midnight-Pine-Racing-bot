@@ -21,6 +21,12 @@ const driverProfileSchema = new mongoose.Schema(
             default: 'Rookie',
         },
 
+        // Progression
+        level:             { type: Number, default: 1, min: 1, index: true },
+        xp:                { type: Number, default: 0, min: 0 },
+        totalXpEarned:     { type: Number, default: 0, min: 0 },
+        lastLevelUpAt:     { type: Date, default: null },
+
         // Team ref
         teamId: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
 
@@ -34,6 +40,16 @@ const driverProfileSchema = new mongoose.Schema(
 
         // Race stats
         teamWins: { type: Number, default: 0 },
+
+        // Tap/Boost mechanics
+        tapsUsed:      { type: Number, default: 0, min: 0, max: 3 },
+        tapsMax:       { type: Number, default: 3, min: 1, max: 3 },
+        lastTapReset:  { type: Date, default: null },
+        totalTapsUsed: { type: Number, default: 0 },
+
+        // Pro status tracking
+        isPro:         { type: Boolean, default: false },
+        proTier:       { type: String, enum: ['Certified', 'Pro', 'Elite', 'Legend'], default: 'Certified' },
     },
     { timestamps: true }
 );

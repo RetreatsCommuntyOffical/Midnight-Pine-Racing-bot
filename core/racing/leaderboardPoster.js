@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const mongoose = require('mongoose');
 const { getLeaderboard } = require('./service');
+const broker = require('../messageBroker');
 
 const SOLO_BANNER_URL    = process.env.SOLO_BOARD_BANNER_URL    || process.env.LEADERBOARDS_BANNER_URL || '';
 const STREET_BANNER_URL  = process.env.STREET_BOARD_BANNER_URL  || process.env.LEADERBOARDS_BANNER_URL || '';
@@ -139,7 +140,7 @@ async function postLeaderboardToChannel(client, guild, type, weekly = false) {
     if (primary) {
         await primary.edit({ embeds: [embed] }).catch(() => null);
     } else {
-        primary = await channel.send({ embeds: [embed] }).catch(() => null);
+        primary = await broker.send(channel, { embeds: [embed] });
     }
 
     if (!primary) return;

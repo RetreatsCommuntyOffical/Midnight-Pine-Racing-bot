@@ -70,7 +70,7 @@ module.exports = {
 
     async execute(interaction) {
         if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-            await interaction.reply({ content: 'Staff only.', ephemeral: true });
+            await interaction.reply({ content: 'Staff only.', flags: 64 });
             return;
         }
 
@@ -84,7 +84,7 @@ module.exports = {
                     const ts = r.scheduledFor ? `<t:${Math.floor(new Date(r.scheduledFor).getTime() / 1000)}:R>` : 'draft';
                     return `\`${r._id}\` [${r.type.toUpperCase()}] **${r.title}** — ${ts}`;
                 });
-                await interaction.reply({ content: lines.join('\n'), ephemeral: true });
+                await interaction.reply({ content: lines.join('\n'), flags: 64 });
                 return;
             }
 
@@ -92,8 +92,8 @@ module.exports = {
                 const Release = require('../models/Release');
                 const id = interaction.options.getString('release_id', true);
                 const release = await Release.findById(id).catch(() => null);
-                if (!release) { await interaction.reply({ content: 'Release not found.', ephemeral: true }); return; }
-                await interaction.deferReply({ ephemeral: true });
+                if (!release) { await interaction.reply({ content: 'Release not found.', flags: 64 }); return; }
+                await interaction.deferReply({ flags: 64 });
                 const msg = await postRelease(interaction.client, interaction.guild, release);
                 await interaction.editReply(msg ? `✅ Posted in <#${msg.channelId}>.` : '⚠️ Channel not found — run /setup-midnight-pine first.');
                 return;
@@ -139,16 +139,16 @@ module.exports = {
             const release = await createRelease(releaseData);
 
             if (!scheduleIso) {
-                await interaction.deferReply({ ephemeral: true });
+                await interaction.deferReply({ flags: 64 });
                 const msg = await postRelease(interaction.client, interaction.guild, release);
                 await interaction.editReply(msg ? `✅ Drop posted in <#${msg.channelId}>.` : '⚠️ Channel not found — run /setup-midnight-pine first.');
                 return;
             }
 
             const ts = Math.floor(new Date(scheduleIso).getTime() / 1000);
-            await interaction.reply({ content: `📅 **${release.title}** drops <t:${ts}:R> (ID: \`${release._id}\`).`, ephemeral: true });
+            await interaction.reply({ content: `📅 **${release.title}** drops <t:${ts}:R> (ID: \`${release._id}\`).`, flags: 64 });
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

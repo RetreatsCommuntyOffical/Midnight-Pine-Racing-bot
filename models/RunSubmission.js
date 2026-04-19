@@ -19,6 +19,7 @@ const runSubmissionSchema = new mongoose.Schema(
             default: 'pending',
             index: true,
         },
+        antiCheatMeta:   { type: Object, default: {} },
         mapName:     { type: String, default: null, index: true },
         vehicleName: { type: String, default: null, index: true },
     },

@@ -1,3 +1,5 @@
+'use strict';
+const { eventEmbed, rows, Buttons, ts, DIVIDER } = require('../core/ui/theme');
 const { PermissionFlagsBits } = require('discord.js');
 const { createScheduledEvent, listScheduledEvents } = require('../core/racing/service');
 
@@ -26,7 +28,7 @@ module.exports = {
         try {
             if (sub === 'create') {
                 if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-                    await interaction.reply({ content: 'Staff only.', ephemeral: true });
+                    await interaction.reply({ content: 'Staff only.', flags: 64 });
                     return;
                 }
                 const evt = await createScheduledEvent({
@@ -37,25 +39,44 @@ module.exports = {
                     channelId:          interaction.options.getChannel('channel')?.id   || null,
                     createdByDiscordId: interaction.user.id,
                 });
-                const ts = Math.floor(new Date(evt.startsAt).getTime() / 1000);
-                await interaction.reply(`📅 Event **${evt.title}** scheduled for <t:${ts}:F> (<t:${ts}:R>). Reminders at 60, 15 & 5 minutes.`);
+
+                const embed = eventEmbed({
+                    title:       `🏁 Event Scheduled — ${evt.title}`,
+                    description: evt.description || 'Get ready to race.',
+                    fields: [
+                        { name: '🗓️ Starts',    value: ts(evt.startsAt, 'F'),    inline: true },
+                        { name: '⏰ Countdown', value: ts(evt.startsAt, 'R'),    inline: true },
+                        { name: '🔔 Reminders', value: '60, 15 & 5 min before', inline: true },
+                    ],
+                });
+                await interaction.reply({ embeds: [embed], components: rows([Buttons.joinEvent(evt.title)]) });
                 return;
             }
 
             if (sub === 'list') {
                 const events = await listScheduledEvents(10);
                 if (!events.length) {
-                    await interaction.reply('No upcoming events scheduled.');
+                    await interaction.reply({
+                        embeds: [eventEmbed({ title: '🗓️ No Upcoming Events', description: 'Nothing scheduled yet. Check back soon!' })],
+                    });
                     return;
                 }
-                const lines = events.map((e) => {
-                    const ts = Math.floor(new Date(e.startsAt).getTime() / 1000);
-                    return `• **${e.title}** — <t:${ts}:F> (<t:${ts}:R>)`;
+                const fields = events.map((e) => ({
+                    name:  `🏁 ${e.title}`,
+                    value: `Starts ${ts(e.startsAt, 'F')} · ${ts(e.startsAt, 'R')}${e.description ? `\n${e.description}` : ''}`,
+                    inline: false,
+                }));
+                const embed = eventEmbed({
+                    title:       '🗓️ Upcoming Events',
+                    description: DIVIDER,
+                    fields,
+                    footer:      `${events.length} event${events.length !== 1 ? 's' : ''} scheduled`,
                 });
-                await interaction.reply(lines.join('\n'));
+                const firstEvt = events[0];
+                await interaction.reply({ embeds: [embed], components: rows([Buttons.joinEvent(firstEvt.title)]) });
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

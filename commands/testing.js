@@ -29,7 +29,7 @@ module.exports = {
 
     async execute(interaction) {
         if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-            await interaction.reply({ content: 'Staff only.', ephemeral: true });
+            await interaction.reply({ content: 'Staff only.', flags: 64 });
             return;
         }
 
@@ -42,16 +42,16 @@ module.exports = {
                 const role   = interaction.guild?.roles.cache.find((r) => r.name === TESTER_ROLE_NAME);
 
                 if (!role) {
-                    await interaction.reply({ content: `**${TESTER_ROLE_NAME}** role not found. Run \`/setup-midnight-pine\` first.`, ephemeral: true });
+                    await interaction.reply({ content: `**${TESTER_ROLE_NAME}** role not found. Run \`/setup-midnight-pine\` first.`, flags: 64 });
                     return;
                 }
 
                 if (grant) {
                     await member.roles.add(role);
-                    await interaction.reply({ content: `✅ Granted **${TESTER_ROLE_NAME}** to ${member}.`, ephemeral: true });
+                    await interaction.reply({ content: `✅ Granted **${TESTER_ROLE_NAME}** to ${member}.`, flags: 64 });
                 } else {
                     await member.roles.remove(role);
-                    await interaction.reply({ content: `🗑️ Revoked **${TESTER_ROLE_NAME}** from ${member}.`, ephemeral: true });
+                    await interaction.reply({ content: `🗑️ Revoked **${TESTER_ROLE_NAME}** from ${member}.`, flags: 64 });
                 }
                 return;
             }
@@ -65,7 +65,7 @@ module.exports = {
 
                 const channel = interaction.guild?.channels.cache.find((c) => c.name === '🧪┃testing-access' && c.isTextBased());
                 if (!channel) {
-                    await interaction.reply({ content: '`🧪┃testing-access` not found. Run `/setup-midnight-pine` first.', ephemeral: true });
+                    await interaction.reply({ content: '`🧪┃testing-access` not found. Run `/setup-midnight-pine` first.', flags: 64 });
                     return;
                 }
 
@@ -91,10 +91,10 @@ module.exports = {
                 if (imageUrl) embed.setImage(imageUrl);
 
                 await channel.send({ content: testerRole ? `<@&${testerRole.id}>` : null, embeds: [embed] });
-                await interaction.reply({ content: `✅ Testing announcement posted in <#${channel.id}>.`, ephemeral: true });
+                await interaction.reply({ content: `✅ Testing announcement posted in <#${channel.id}>.`, flags: 64 });
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

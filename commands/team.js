@@ -1,4 +1,5 @@
-const { EmbedBuilder } = require('discord.js');
+'use strict';
+const { teamEmbed, successEmbed, rows, Buttons, DIVIDER } = require('../core/ui/theme');
 const { createTeam, joinTeam, getTeamStats, getTeamRank } = require('../core/racing/service');
 const { postOrUpdateTeamRoster } = require('../core/racing/teamRosterPoster');
 
@@ -32,7 +33,18 @@ module.exports = {
             if (sub === 'create') {
                 const name = interaction.options.getString('name', true).trim();
                 const team = await createTeam({ name, captainDiscordId: interaction.user.id });
-                await interaction.reply(`✅ Team **${team.name}** created. You are the captain.`);
+                const embed = successEmbed({
+                    title:       '🏗️ Team Created',
+                    description: `**${team.name}** is ready. You are the captain.`,
+                    fields: [
+                        { name: '👥 Members', value: '1', inline: true },
+                        { name: '🏆 Points',  value: '0', inline: true },
+                    ],
+                });
+                await interaction.reply({
+                    embeds:     [embed],
+                    components: rows([Buttons.teamStatsByName(team.name), Buttons.applyToTeam()]),
+                });
                 await postOrUpdateTeamRoster(interaction.client, interaction.guild).catch(() => null);
                 return;
             }
@@ -44,13 +56,23 @@ module.exports = {
                     discordId:   interaction.user.id,
                     displayName: interaction.member?.displayName || interaction.user.username,
                 });
-                await interaction.reply(`✅ You joined **${team.name}**. ${team.members.length} member(s) total.`);
+                const embed = successEmbed({
+                    title:       '✅ Joined Team',
+                    description: `You are now a member of **${team.name}**.`,
+                    fields: [
+                        { name: '👥 Members', value: String(team.members.length), inline: true },
+                    ],
+                });
+                await interaction.reply({
+                    embeds:     [embed],
+                    components: rows([Buttons.teamStatsByName(team.name)]),
+                });
                 await postOrUpdateTeamRoster(interaction.client, interaction.guild).catch(() => null);
                 return;
             }
 
             if (sub === 'roster') {
-                await interaction.deferReply({ ephemeral: true });
+                await interaction.deferReply({ flags: 64 });
                 const msg = await postOrUpdateTeamRoster(interaction.client, interaction.guild);
                 if (!msg) {
                     await interaction.editReply('Team roster channel not found. Expected channel: 📋┃team-roster');
@@ -67,34 +89,38 @@ module.exports = {
                 if (!teamName) {
                     const profile = await DriverProfile.findOne({ discordId: interaction.user.id }).populate('teamId');
                     if (!profile?.teamId) {
-                        await interaction.reply({ content: "You're not in a team. Join one with `/team join`.", ephemeral: true });
+                        await interaction.reply({ content: "You're not in a team. Join one with `/team join`.", flags: 64 });
                         return;
                     }
                     teamName = profile.teamId.name;
                 }
 
                 const data = await getTeamStats(teamName);
-                if (!data) { await interaction.reply({ content: 'Team not found.', ephemeral: true }); return; }
+                if (!data) { await interaction.reply({ content: 'Team not found.', flags: 64 }); return; }
 
                 const { team, profiles } = data;
                 const rank = await getTeamRank(team._id);
-                const memberLines = profiles.map((p, i) => `**${i + 1}.** ${p.displayName} — ${p.totalPoints} pts · ${p.tier}`);
+                const medals = ['🥇', '🥈', '🥉'];
+                const memberLines = profiles.map((p, i) => `${medals[i] || `**${i + 1}.**`} ${p.displayName} — ${p.totalPoints} pts · ${p.tier}`);
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x00b894)
-                    .setTitle(`👥 Team: ${team.name}`)
-                    .addFields(
-                        { name: '🏆 Total Points', value: String(team.totalPoints), inline: true },
-                        { name: '🥇 Wins',         value: String(team.teamWins),    inline: true },
-                        { name: '📊 Rank',         value: `#${rank}`,              inline: true },
-                        { name: `👤 Members (${profiles.length})`, value: memberLines.join('\n') || 'No members.', inline: false }
-                    )
-                    .setTimestamp();
+                const embed = teamEmbed({
+                    title:  `👥 Team: ${team.name}`,
+                    description: DIVIDER,
+                    fields: [
+                        { name: '🏆 Total Points', value: String(team.totalPoints),       inline: true  },
+                        { name: '🥇 Wins',         value: String(team.teamWins),          inline: true  },
+                        { name: '📊 Rank',         value: `#${rank}`,                     inline: true  },
+                        { name: `👤 Members (${profiles.length})`, value: memberLines.join('\n') || 'No members.', inline: false },
+                    ],
+                });
 
-                await interaction.reply({ embeds: [embed] });
+                await interaction.reply({
+                    embeds:     [embed],
+                    components: rows([Buttons.createTeam(), Buttons.applyToTeam(), Buttons.refreshBoard('team')]),
+                });
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

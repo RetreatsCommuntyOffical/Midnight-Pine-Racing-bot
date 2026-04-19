@@ -1,4 +1,6 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+'use strict';
+const { raceEmbed, successEmbed, leaderboardEmbed, rows, Buttons, DIVIDER, btn } = require('../core/ui/theme');
+const { PermissionFlagsBits } = require('discord.js');
 const { createRace, joinRace, startRace, submitRaceResults } = require('../core/racing/service');
 const { refreshAllLeaderboards } = require('../core/racing/leaderboardPoster');
 
@@ -42,29 +44,48 @@ module.exports = {
                     trackName:          interaction.options.getString('track'),
                     createdByDiscordId: interaction.user.id,
                 });
-                await interaction.reply(`🏁 Race **${race.raceName}** created${race.trackName ? ` on **${race.trackName}**` : ''}. Players can use \`/race join name:${race.raceName}\`.`);
+                const embed = raceEmbed({
+                    title:       `🏁 Race Created — ${race.raceName}`,
+                    description: race.trackName ? `Track: **${race.trackName}**` : 'No track specified.',
+                    fields: [
+                        { name: '👥 Drivers', value: '0 registered', inline: true },
+                        { name: '🟡 Status',  value: 'Open',         inline: true },
+                    ],
+                });
+                await interaction.reply({
+                    embeds:     [embed],
+                    components: rows([btn({ id: `race_join_${race.raceName}`, label: 'Join Race', style: 'Success', emoji: '🏁' })]),
+                });
                 return;
             }
 
             if (sub === 'join') {
                 const race = await joinRace({ raceName: interaction.options.getString('name', true), discordId: interaction.user.id });
-                await interaction.reply(`✅ You've joined **${race.raceName}**. ${race.participants.length} driver(s) registered.`);
+                const embed = successEmbed({
+                    title:       `✅ Joined Race — ${race.raceName}`,
+                    description: `You are registered. ${race.participants.length} driver(s) in.`,
+                });
+                await interaction.reply({ embeds: [embed] });
                 return;
             }
 
             if (sub === 'start') {
                 if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-                    await interaction.reply({ content: 'Staff only.', ephemeral: true });
+                    await interaction.reply({ content: 'Staff only.', flags: 64 });
                     return;
                 }
                 const race = await startRace({ raceName: interaction.options.getString('name', true) });
-                await interaction.reply(`🚦 **${race.raceName}** is now **started**. ${race.participants.length} driver(s) in.`);
+                const embed = raceEmbed({
+                    title:       `🚦 Race Started — ${race.raceName}`,
+                    description: `${race.participants.length} driver(s) on track. Good luck!`,
+                });
+                await interaction.reply({ embeds: [embed] });
                 return;
             }
 
             if (sub === 'results') {
                 if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-                    await interaction.reply({ content: 'Staff only.', ephemeral: true });
+                    await interaction.reply({ content: 'Staff only.', flags: 64 });
                     return;
                 }
                 await interaction.deferReply();
@@ -83,21 +104,30 @@ module.exports = {
                     submittedByDiscordId:  interaction.user.id,
                 });
 
+                const MEDALS = ['🥇', '🥈', '🥉'];
                 const lines = race.results
                     .sort((a, b) => (a.dnf ? 1 : 0) - (b.dnf ? 1 : 0) || a.position - b.position)
-                    .map((r) => `**P${r.position}** <@${r.discordId}>${r.dnf ? ' *(DNF)*' : ''} — ${r.pointsAwarded} pts`);
+                    .map((r, i) => {
+                        const medal = r.dnf ? '🛑' : (MEDALS[i] || `**P${r.position}**`);
+                        return `${medal} <@${r.discordId}>${r.dnf ? ' *(DNF)*' : ''} — ${r.pointsAwarded} pts`;
+                    });
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x0a3d62)
-                    .setTitle(`🏁 Race Results — ${race.raceName}`)
-                    .setDescription(lines.join('\n') || 'No results.')
-                    .setTimestamp();
+                const embed = raceEmbed({
+                    title:       `🏁 Race Results — ${race.raceName}`,
+                    description: DIVIDER,
+                    fields: [
+                        { name: '🏆 Results', value: lines.join('\n') || 'No results.', inline: false },
+                    ],
+                });
 
-                await interaction.editReply({ embeds: [embed] });
+                await interaction.editReply({
+                    embeds:     [embed],
+                    components: rows([Buttons.refreshBoard('circuit'), Buttons.refreshBoard('street')]),
+                });
                 void refreshAllLeaderboards(interaction.client, interaction.guild);
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

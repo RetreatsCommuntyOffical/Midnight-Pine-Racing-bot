@@ -1,0 +1,312 @@
+{
+  "embeds": [
+    {
+      "key": "welcome-panel",
+      "channelName": "🏁┃welcome",
+      "title": "Welcome to Midnight Pine Racing",
+      "description": "Read the rules, pick your roles, and hit the road.",
+      "color": 3066993,
+      "fields": [
+        {
+          "name": "Step 1",
+          "value": "Read rules",
+          "inline": false
+        },
+        {
+          "name": "Step 2",
+          "value": "Choose roles",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "how-to-start-panel",
+      "channelName": "🎯┃how-to-start",
+      "title": "How To Start Racing",
+      "description": "Quick route for new members to start earning points and climb leaderboards.",
+      "color": 3447003,
+      "fields": [
+        {
+          "name": "1) Pick Roles",
+          "value": "Use the role panel in #🎭┃role-selection.",
+          "inline": false
+        },
+        {
+          "name": "2) Start Runs",
+          "value": "Use /run start, /run end, then /run submit in #🚦┃run-submissions.",
+          "inline": false
+        },
+        {
+          "name": "3) Join Races",
+          "value": "Use /race create, /race join, and /race start in #🏁┃race-lobby.",
+          "inline": false
+        },
+        {
+          "name": "4) Track Progress",
+          "value": "Use /profile, /stats, /leaderboard, /top, /challenge list.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "bot-commands-panel",
+      "channelName": "🤖┃bot-commands",
+      "title": "Bot Command Hub",
+      "description": "Use this channel for all slash commands.",
+      "color": 10181046,
+      "fields": [
+        {
+          "name": "Driver Commands",
+          "value": "/profile, /stats, /leaderboard, /top, /balance, /shop, /buy, /challenge",
+          "inline": false
+        },
+        {
+          "name": "Race Commands",
+          "value": "/run start|end|submit, /race create|join|start|results, /event list",
+          "inline": false
+        },
+        {
+          "name": "Team Commands",
+          "value": "/team create|join|stats, /teamstats",
+          "inline": false
+        },
+        {
+          "name": "Admin Commands",
+          "value": "/setup-midnight-pine, /layout-refresh, /force-sync, /embed-sync, /linux-sync, /admin",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "announcements-panel",
+      "channelName": "📢┃announcements",
+      "title": "Server Announcements",
+      "description": "Official updates from the Midnight Pine Racing staff.",
+      "color": 3447003,
+      "fields": [],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "run-submissions-panel",
+      "channelName": "🚦┃run-submissions",
+      "title": "Run Submission Format",
+      "description": "Submit runs with proof for verification and rewards.",
+      "color": 15105570,
+      "fields": [
+        {
+          "name": "Required Flow",
+          "value": "/run start -> /run end -> /run submit",
+          "inline": false
+        },
+        {
+          "name": "Recommended Proof",
+          "value": "Include proof_url and clip_url for faster anti-cheat approval.",
+          "inline": false
+        },
+        {
+          "name": "Auto Rewards",
+          "value": "Runs award points, XP, and coins. Suspicious spikes are flagged.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "race-lobby-panel",
+      "channelName": "🏁┃race-lobby",
+      "title": "Race Lobby Rules",
+      "description": "Create races, join races, and submit results with fair play.",
+      "color": 3092790,
+      "fields": [
+        {
+          "name": "Create / Join",
+          "value": "/race create name:<name> track:<track> then /race join name:<name>",
+          "inline": false
+        },
+        {
+          "name": "Start / Results",
+          "value": "Staff starts race and posts results via /race results with JSON payload.",
+          "inline": false
+        },
+        {
+          "name": "Scoring",
+          "value": "Circuit points, XP, and coin rewards are applied automatically.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "high-scores-panel",
+      "channelName": "📈┃high-scores",
+      "title": "High Scores and Records",
+      "description": "Top runs and milestone records are highlighted here.",
+      "color": 16766720,
+      "fields": [
+        {
+          "name": "Milestones",
+          "value": "10k drift run, 100k lifetime points, top speed records.",
+          "inline": false
+        },
+        {
+          "name": "Leaderboards",
+          "value": "Check #📊 LEADERBOARDS and use /mapleaderboard for map and vehicle rankings.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "events-panel",
+      "channelName": "📅┃events",
+      "title": "Event Control Center",
+      "description": "Upcoming event schedules and reminders are posted here.",
+      "color": 15844367,
+      "fields": [
+        {
+          "name": "Create Event (Staff)",
+          "value": "/event create title:<title> starts_at:<ISO date>",
+          "inline": false
+        },
+        {
+          "name": "View Events",
+          "value": "/event list",
+          "inline": false
+        },
+        {
+          "name": "Reminder Windows",
+          "value": "60, 15, and 5 minutes before start.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "team-roster-panel",
+      "channelName": "📋┃team-roster",
+      "title": "Team Roster Board",
+      "description": "Official team rosters and standings references.",
+      "color": 5763719,
+      "fields": [
+        {
+          "name": "Team Commands",
+          "value": "/team create, /team join, /team stats, /teamstats",
+          "inline": false
+        },
+        {
+          "name": "Contribution",
+          "value": "Top contributors in events feed team points and rankings.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "support-routing-panel",
+      "channelName": "🎫┃support-hub",
+      "title": "Support Routing Notice",
+      "description": "Use the support buttons below to open the right ticket type.",
+      "color": 10038562,
+      "fields": [
+        {
+          "name": "Fastest Support",
+          "value": "Choose the ticket type that best matches your request.",
+          "inline": false
+        },
+        {
+          "name": "No Duplicates",
+          "value": "Only one active ticket per type per user to keep queues clean.",
+          "inline": false
+        }
+      ],
+      "buttons": [
+        {
+          "label": "General Support",
+          "emoji": "🏎️",
+          "style": "primary",
+          "customId": "ticket_open_support",
+          "row": 0
+        },
+        {
+          "label": "Join the Team",
+          "emoji": "🧑‍🔧",
+          "style": "success",
+          "customId": "ticket_open_join",
+          "row": 0
+        },
+        {
+          "label": "Services / Purchases",
+          "emoji": "📦",
+          "style": "secondary",
+          "customId": "ticket_open_services",
+          "row": 0
+        },
+        {
+          "label": "Report Issues",
+          "emoji": "⚠️",
+          "style": "danger",
+          "customId": "ticket_open_report",
+          "row": 1
+        },
+        {
+          "label": "Partnerships",
+          "emoji": "🤝",
+          "style": "success",
+          "customId": "ticket_open_partner",
+          "row": 1
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    },
+    {
+      "key": "leaderboard-guide-panel",
+      "channelName": "🏆┃solo-board",
+      "title": "Leaderboard Guide",
+      "description": "Boards auto-refresh and show verified standings.",
+      "color": 16766720,
+      "fields": [
+        {
+          "name": "Board Types",
+          "value": "Solo, Street, Circuit, Team",
+          "inline": false
+        },
+        {
+          "name": "Useful Commands",
+          "value": "/leaderboard, /top, /mapleaderboard",
+          "inline": false
+        },
+        {
+          "name": "Weekly Reset",
+          "value": "Weekly rankings reset on schedule/manual staff action.",
+          "inline": false
+        }
+      ],
+      "footerText": "Midnight Pine Racing",
+      "imageUrl": "",
+      "thumbnailUrl": ""
+    }
+  ]
+}

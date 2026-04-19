@@ -1,4 +1,6 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
+'use strict';
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
+const { embed: buildEmbed, COLORS, DIVIDER } = require('../core/ui/theme');
 
 module.exports = {
     data: {
@@ -8,37 +10,38 @@ module.exports = {
 
     async execute(interaction) {
         if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-            await interaction.reply({ content: 'Staff only.', ephemeral: true });
+            await interaction.reply({ content: 'Staff only.', flags: 64 });
             return;
         }
 
-        const embed = new EmbedBuilder()
-            .setColor(0x4a235a)
-            .setTitle('🚦  Midnight Pine Racing — Self-Assignable Roles')
-            .setDescription(
-                '━━━━━━━━━━━━━━━━━━\n' +
-                '**🏎️ Street Driver** — No Hesi runs and street racing\n' +
-                '**🏁 Circuit Driver** — Track events and circuit races\n' +
-                '**🚦 Racer** — Compete in all formats\n' +
-                '\n' +
-                '**🎥 Content Creator** — Share your racing content\n' +
-                '**🤝 Partner** — Partner server member\n' +
-                '━━━━━━━━━━━━━━━━━━\n' +
-                '_Click to add or remove. Toggle on/off anytime._'
-            );
+        const roleEmbed = buildEmbed({
+            color:       COLORS.primary,
+            title:       '🚦 Self-Assignable Roles',
+            description: [
+                DIVIDER,
+                '**🏎️ Street Driver** — No Hesi runs and street racing',
+                '**🏁 Circuit Driver** — Track events and circuit races',
+                '**🚦 Racer** — Compete in all formats',
+                '',
+                '**🎥 Content Creator** — Share your racing content',
+                '**🤝 Partner** — Partner server member',
+                DIVIDER,
+                '_Click a button to add or remove a role. Toggle on/off anytime._',
+            ].join('\n'),
+        });
 
         const row1 = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('role_street').setLabel('🏎️ Street Driver').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('role_circuit').setLabel('🏁 Circuit Driver').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('role_racer').setLabel('🚦 Racer').setStyle(ButtonStyle.Success),
+            new ButtonBuilder().setCustomId('role_street').setLabel('Street Driver').setEmoji('🏎️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('role_circuit').setLabel('Circuit Driver').setEmoji('🏁').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('role_racer').setLabel('Racer').setEmoji('🚦').setStyle(ButtonStyle.Success),
         );
 
         const row2 = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('role_creator').setLabel('🎥 Content Creator').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('role_partner').setLabel('🤝 Partner').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('role_creator').setLabel('Content Creator').setEmoji('🎥').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('role_partner').setLabel('Partner').setEmoji('🤝').setStyle(ButtonStyle.Secondary),
         );
 
-        await interaction.channel.send({ embeds: [embed], components: [row1, row2] });
-        await interaction.reply({ content: '✅ Role picker posted.', ephemeral: true });
+        await interaction.channel.send({ embeds: [roleEmbed], components: [row1, row2] });
+        await interaction.reply({ content: '✅ Role picker posted.', flags: 64 });
     },
 };

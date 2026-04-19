@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const Release = require('../../models/Release');
+const broker  = require('../messageBroker');
 
 const DIVIDER = '━━━━━━━━━━━━━━━━━━';
 
@@ -88,7 +89,7 @@ async function postRelease(client, guild, release) {
 
     const embed   = buildEmbed(release);
     const content = release.pingRoleId ? `<@&${release.pingRoleId}>` : undefined;
-    const message = await channel.send({ content, embeds: [embed] });
+    const message = await broker.send(channel, { content, embeds: [embed] });
 
     release.status           = 'live';
     release.postedMessageId  = message.id;

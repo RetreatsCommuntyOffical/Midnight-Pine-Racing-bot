@@ -16,7 +16,7 @@ module.exports = {
 
     async execute(interaction) {
         if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
-            await interaction.reply({ content: 'Administrator only.', ephemeral: true });
+            await interaction.reply({ content: 'Administrator only.', flags: 64 });
             return;
         }
 
@@ -24,7 +24,7 @@ module.exports = {
 
         try {
             if (sub === 'end') {
-                await interaction.deferReply({ ephemeral: true });
+                await interaction.deferReply({ flags: 64 });
                 const tag     = interaction.options.getString('tag', true);
                 const archive = await archiveSeason(tag);
 
@@ -44,7 +44,7 @@ module.exports = {
             if (sub === 'history') {
                 const archives = await getSeasonHistory(5);
                 if (!archives.length) {
-                    await interaction.reply({ content: 'No past seasons recorded yet.', ephemeral: true });
+                    await interaction.reply({ content: 'No past seasons recorded yet.', flags: 64 });
                     return;
                 }
 
@@ -69,7 +69,7 @@ module.exports = {
                 await interaction.reply({ embeds: [embed] });
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

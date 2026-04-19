@@ -4,6 +4,11 @@ const RaceEventSchedule = require('../../models/RaceEventSchedule');
 const RunSession        = require('../../models/RunSession');
 const RunSubmission     = require('../../models/RunSubmission');
 const Team              = require('../../models/Team');
+const LeaderboardBan    = require('../../models/LeaderboardBan');
+const { awardXp }       = require('../progression/service');
+const { applyTransaction } = require('../economy/service');
+const { applyMembershipBoosts } = require('../membership/service');
+const { recordChallengeMetric } = require('../challenges/service');
 const {
     calculateNoHesiPoints,
     getCircuitPointsByPosition,
@@ -11,6 +16,10 @@ const {
 } = require('./points');
 
 const TEAM_WIN_BONUS = 20;
+const NO_HESI_XP_RATE = 0.5;
+const NO_HESI_COIN_RATE = 0.3;
+const CIRCUIT_XP_RATE = 1.5;
+const CIRCUIT_COIN_RATE = 0.8;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -95,6 +104,16 @@ async function submitRun(params) {
     const points       = calculateNoHesiPoints({ distanceMeters, crashes, topSpeed, cleanRun });
     const antiCheatStatus = adminVerifiedBy ? 'verified' : 'pending';
 
+    const suspiciousReasons = [];
+    if (Number(distanceMeters) > 500000) suspiciousReasons.push('distance_too_high');
+    if (Number(topSpeed) > 450) suspiciousReasons.push('top_speed_too_high');
+    if (Number(timeSurvivedSec) > 21600) suspiciousReasons.push('time_too_high');
+    if (Number(points.total) > 10000) suspiciousReasons.push('points_spike');
+
+    const finalAntiCheatStatus = suspiciousReasons.length > 0 && !adminVerifiedBy
+        ? 'pending'
+        : antiCheatStatus;
+
     const submission = await RunSubmission.create({
         discordId,
         sessionId:       endedSession?._id ?? null,
@@ -103,9 +122,10 @@ async function submitRun(params) {
         clipUrl:         clipUrl     || null,
         adminVerifiedBy: adminVerifiedBy || null,
         pointsAwarded:   points.total,
-        antiCheatStatus,
+        antiCheatStatus: finalAntiCheatStatus,
         mapName:         mapName     || null,
         vehicleName:     vehicleName || null,
+        antiCheatMeta:   suspiciousReasons.length ? { suspiciousReasons } : {},
     });
 
     if (endedSession) {
@@ -133,7 +153,45 @@ async function submitRun(params) {
         await recalculateTeamPoints(profile.teamId);
     }
 
-    return { submission, points };
+    const earnedXp = Math.max(10, Math.round(points.total * NO_HESI_XP_RATE));
+    const earnedCoins = Math.max(5, Math.round(points.total * NO_HESI_COIN_RATE));
+    const boostedRewards = await applyMembershipBoosts({
+        discordId,
+        xp: earnedXp,
+        coins: earnedCoins,
+    });
+
+    let progression = null;
+    if (!suspiciousReasons.length || adminVerifiedBy) {
+        try {
+            progression = await awardXp({
+                discordId,
+                amount: boostedRewards.xp,
+                reason: 'no_hesi_submission',
+            });
+            await applyTransaction({
+                discordId,
+                amount: boostedRewards.coins,
+                type: 'credit',
+                source: 'run_submission_reward',
+                reason: 'No Hesi run reward',
+                metadata: { submissionId: String(submission._id) },
+                idempotencyKey: `run-reward-${submission._id}`,
+            });
+            await recordChallengeMetric({ discordId, metric: 'drift_points', amount: points.total });
+            if (cleanRun) await recordChallengeMetric({ discordId, metric: 'clean_runs', amount: 1 });
+        } catch (err) {
+            console.warn('Reward processing failed for run submission:', err.message);
+        }
+    }
+
+    return {
+        submission,
+        points,
+        progression,
+        earnedCoins: (!suspiciousReasons.length || adminVerifiedBy) ? boostedRewards.coins : 0,
+        suspiciousReasons,
+    };
 }
 
 // ─── Races ────────────────────────────────────────────────────────────────────
@@ -190,6 +248,33 @@ async function submitRaceResults({ raceId, raceName, results, submittedByDiscord
         p.weeklyCircuitPoints = (p.weeklyCircuitPoints || 0) + row.pointsAwarded;
         p.tier               = getTierFromPoints(p.totalPoints);
         await p.save();
+
+        const earnedXp = Math.max(5, Math.round(row.pointsAwarded * CIRCUIT_XP_RATE));
+        const earnedCoins = Math.max(3, Math.round(row.pointsAwarded * CIRCUIT_COIN_RATE));
+        try {
+            const boostedRewards = await applyMembershipBoosts({
+                discordId: row.discordId,
+                xp: earnedXp,
+                coins: earnedCoins,
+            });
+            await awardXp({
+                discordId: row.discordId,
+                amount: boostedRewards.xp,
+                reason: 'circuit_result',
+            });
+            await applyTransaction({
+                discordId: row.discordId,
+                amount: boostedRewards.coins,
+                type: 'credit',
+                source: 'race_result_reward',
+                reason: 'Circuit race reward',
+                metadata: { raceId: String(race._id), position: row.position },
+                idempotencyKey: `race-reward-${race._id}-${row.discordId}`,
+            });
+            await recordChallengeMetric({ discordId: row.discordId, metric: 'event_participation', amount: 1 });
+        } catch (err) {
+            console.warn('Reward processing failed for race result:', err.message);
+        }
     }
 
     await applyTeamEventContribution(driverPointsMap);
@@ -257,15 +342,19 @@ async function getTeamStats(name) {
 // ─── Leaderboards ─────────────────────────────────────────────────────────────
 
 async function getLeaderboard(type, limit = 10, weekly = false) {
+    const bannedIds = await LeaderboardBan.distinct('discordId', { active: true });
+
     if (type === 'teams') {
         return Team.find({}).sort(weekly ? { weeklyPoints: -1 } : { totalPoints: -1 }).limit(limit);
     }
+
     const sortMap = {
         solo:    weekly ? { weeklyPoints: -1 }        : { totalPoints: -1 },
         street:  weekly ? { weeklyStreetPoints: -1 }  : { streetPoints: -1 },
         circuit: weekly ? { weeklyCircuitPoints: -1 } : { circuitPoints: -1 },
     };
-    return DriverProfile.find({}).sort(sortMap[type] || sortMap.solo).limit(limit);
+    const query = bannedIds.length ? { discordId: { $nin: bannedIds } } : {};
+    return DriverProfile.find(query).sort(sortMap[type] || sortMap.solo).limit(limit);
 }
 
 async function getDriverStats(discordId) {
@@ -275,6 +364,11 @@ async function getDriverStats(discordId) {
 async function getDriverRank(discordId, type = 'solo', weekly = false) {
     const profile = await DriverProfile.findOne({ discordId });
     if (!profile) return null;
+
+    const banned = await LeaderboardBan.findOne({ discordId, active: true });
+    if (banned) return null;
+
+    const bannedIds = await LeaderboardBan.distinct('discordId', { active: true });
     const fieldMap = {
         solo:    weekly ? 'weeklyPoints'        : 'totalPoints',
         street:  weekly ? 'weeklyStreetPoints'  : 'streetPoints',
@@ -282,7 +376,10 @@ async function getDriverRank(discordId, type = 'solo', weekly = false) {
     };
     const field = fieldMap[type] || fieldMap.solo;
     const score = Number(profile[field] || 0);
-    return (await DriverProfile.countDocuments({ [field]: { $gt: score } })) + 1;
+    const query = bannedIds.length
+        ? { [field]: { $gt: score }, discordId: { $nin: bannedIds } }
+        : { [field]: { $gt: score } };
+    return (await DriverProfile.countDocuments(query)) + 1;
 }
 
 async function getTeamRank(teamId, weekly = false) {

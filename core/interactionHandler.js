@@ -1,4 +1,5 @@
 const { ticketService, TICKET_TYPES } = require('./ticketService');
+const { handleUiButton } = require('./ui/buttonHandlers');
 const {
     buildApplyModal,
     buildCreateModal,
@@ -27,7 +28,7 @@ function attachInteractionHandler(client, commands) {
                 await command.execute(interaction);
             } catch (err) {
                 console.error(`[${interaction.commandName}] error:`, err);
-                const reply = { content: 'Something went wrong. Please try again.', ephemeral: true };
+                const reply = { content: 'Something went wrong. Please try again.', flags: 64 };
                 if (interaction.deferred || interaction.replied) {
                     await interaction.editReply(reply).catch(() => null);
                 } else {
@@ -58,6 +59,15 @@ function attachInteractionHandler(client, commands) {
 
         // ── Button interactions — ticket system ───────────────────────────────
         if (interaction.isButton()) {
+            // UI theme buttons — handled first
+            if (interaction.customId.startsWith('ui_')) {
+                await handleUiButton(interaction).catch(err => {
+                    console.error('[ui button]', err);
+                    interaction.reply({ content: 'Action failed. Try again.', flags: 64 }).catch(() => null);
+                });
+                return;
+            }
+
             // Open ticket
             if (interaction.customId in TICKET_TYPES) {
                 await ticketService.open(interaction).catch(err => {
@@ -115,7 +125,7 @@ function attachInteractionHandler(client, commands) {
             if (!role) {
                 await interaction.reply({
                     content: `Role **${roleName}** not found. Run \`/setup-midnight-pine\` first.`,
-                    ephemeral: true,
+                    flags: 64,
                 });
                 return;
             }
@@ -126,15 +136,15 @@ function attachInteractionHandler(client, commands) {
             try {
                 if (has) {
                     await member.roles.remove(role);
-                    await interaction.reply({ content: `🗑️ Removed **${roleName}**.`, ephemeral: true });
+                    await interaction.reply({ content: `🗑️ Removed **${roleName}**.`, flags: 64 });
                 } else {
                     await member.roles.add(role);
-                    await interaction.reply({ content: `✅ Granted **${roleName}**.`, ephemeral: true });
+                    await interaction.reply({ content: `✅ Granted **${roleName}**.`, flags: 64 });
                 }
             } catch {
                 await interaction.reply({
                     content: 'Failed to update role. Check bot permissions.',
-                    ephemeral: true,
+                    flags: 64,
                 });
             }
         }

@@ -42,7 +42,7 @@ const ticketService = {
         const type    = TICKET_TYPES[typeKey];
         if (!type) return;
 
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: 64 });
 
         const guild  = interaction.guild;
         const member = interaction.member;
@@ -154,7 +154,7 @@ const ticketService = {
     async close(interaction) {
         const channel = interaction.channel;
         if (!channel.name.startsWith('🎫┃')) {
-            return interaction.reply({ content: 'This command can only be used inside a ticket channel.', ephemeral: true });
+            return interaction.reply({ content: 'This command can only be used inside a ticket channel.', flags: 64 });
         }
 
         // Extract userId and typeKey from topic so in-memory cache is cleared
@@ -212,7 +212,7 @@ const ticketService = {
     async claim(interaction) {
         const channel = interaction.channel;
         if (!channel.name.startsWith('🎫┃')) {
-            return interaction.reply({ content: 'This command can only be used inside a ticket channel.', ephemeral: true });
+            return interaction.reply({ content: 'This command can only be used inside a ticket channel.', flags: 64 });
         }
 
         await interaction.reply({

@@ -1,4 +1,7 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+'use strict';
+const { runEmbed, successEmbed, warnEmbed, rows, Buttons, DIVIDER } = require('../core/ui/theme');
+const { PermissionFlagsBits } = require('discord.js');
+const { syncAutoRoles } = require('../core/racing/autoRoleService');
 const { startRunSession, endRunSession, submitRun } = require('../core/racing/service');
 const { postLeaderboardToChannel } = require('../core/racing/leaderboardPoster');
 
@@ -35,14 +38,22 @@ module.exports = {
         try {
             if (sub === 'start') {
                 await startRunSession(interaction.user.id);
-                await interaction.reply('🌃 Run session started. Use `/run end` when done, then `/run submit`.');
+                const embed = runEmbed({
+                    title:       '🌃 Run Session Started',
+                    description: 'Hit the streets. Use `/run end` when done, then `/run submit`.',
+                });
+                await interaction.reply({ embeds: [embed] });
                 return;
             }
 
             if (sub === 'end') {
                 const session = await endRunSession(interaction.user.id);
                 const dur = Math.round((session.endedAt - session.startedAt) / 1000);
-                await interaction.reply(`🏁 Session ended. Duration: **${dur}s**. Use \`/run submit\` now.`);
+                const embed = runEmbed({
+                    title:       '🏁 Session Ended',
+                    description: `Duration: **${dur}s**. Submit your results now.`,
+                });
+                await interaction.reply({ embeds: [embed] });
                 return;
             }
 
@@ -61,46 +72,54 @@ module.exports = {
                 let adminVerifiedBy = null;
                 if (adminVerifyFlag) {
                     if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-                        await interaction.reply({ content: 'Only staff can use admin_verify.', ephemeral: true });
+                        await interaction.reply({ content: 'Only staff can use admin_verify.', flags: 64 });
                         return;
                     }
                     adminVerifiedBy = interaction.user.id;
                 }
 
-                const { submission, points } = await submitRun({
+                const { submission, points, progression, earnedCoins, suspiciousReasons } = await submitRun({
                     discordId:    interaction.user.id,
                     displayName:  interaction.member?.displayName || interaction.user.username,
                     distanceMeters, timeSurvivedSec, topSpeed, crashes, cleanRun,
                     proofUrl, clipUrl, adminVerifiedBy, mapName, vehicleName,
                 });
 
-                const embed = new EmbedBuilder()
-                    .setColor(0x4a235a)
-                    .setTitle('🌃 Midnight Pine Racing — No Hesi Submission')
-                    .setDescription(`Run submitted for <@${interaction.user.id}>`)
-                    .addFields(
-                        { name: '🏁 Points',    value: String(points.total),    inline: true },
-                        { name: '📏 Distance',  value: `${distanceMeters} m`,   inline: true },
-                        { name: '⏱️ Time',      value: `${timeSurvivedSec} s`,  inline: true },
-                        { name: '💨 Top Speed', value: String(topSpeed),        inline: true },
-                        { name: '💥 Crashes',   value: String(crashes),         inline: true },
-                        { name: '✅ Clean Run', value: cleanRun ? 'Yes' : 'No', inline: true },
+                const acStatus = submission.antiCheatStatus === 'verified' ? '✅ Admin verified' : '⏳ Pending review';
+                const embed = runEmbed({
+                    title:       '🌃 No Hesi Submission',
+                    description: `Run submitted for <@${interaction.user.id}>\n${DIVIDER}`,
+                    fields: [
+                        { name: '🏁 Points',      value: String(points.total),              inline: true },
+                        { name: '⭐ XP Earned',   value: String(progression?.gained || 0),  inline: true },
+                        { name: '🪙 Coins',       value: String(earnedCoins || 0),           inline: true },
+                        { name: '📏 Distance',    value: `${distanceMeters} m`,              inline: true },
+                        { name: '⏱️ Time',        value: `${timeSurvivedSec} s`,             inline: true },
+                        { name: '💨 Top Speed',   value: String(topSpeed),                   inline: true },
+                        { name: '💥 Crashes',     value: String(crashes),                    inline: true },
+                        { name: '✅ Clean Run',   value: cleanRun ? 'Yes' : 'No',            inline: true },
                         ...(mapName     ? [{ name: '🗺️ Map',     value: mapName,     inline: true }] : []),
                         ...(vehicleName ? [{ name: '🚗 Vehicle', value: vehicleName, inline: true }] : []),
-                        {
-                            name: '🔐 Anti-Cheat',
-                            value: submission.antiCheatStatus === 'verified' ? '✅ Admin verified' : '⏳ Pending review',
-                            inline: false,
-                        }
-                    )
-                    .setTimestamp();
+                        { name: '🔐 Anti-Cheat',  value: acStatus,                           inline: false },
+                        ...(suspiciousReasons?.length
+                            ? [{ name: '⚠️ Flags', value: suspiciousReasons.join(', '),      inline: false }]
+                            : []),
+                    ],
+                });
 
-                await interaction.reply({ embeds: [embed] });
-                void postLeaderboardToChannel(interaction.client, interaction.guild, 'street');
-                void postLeaderboardToChannel(interaction.client, interaction.guild, 'solo');
+                await interaction.reply({
+                    embeds:     [embed],
+                    components: rows([Buttons.viewStats(interaction.user.id), Buttons.runHistory(interaction.user.id)]),
+                });
+                // Fire-and-forget side effects
+                syncAutoRoles(interaction.client, interaction.user.id).catch(() => null);
+                (async () => {
+                    await postLeaderboardToChannel(interaction.client, interaction.guild, 'street').catch(() => null);
+                    await postLeaderboardToChannel(interaction.client, interaction.guild, 'solo').catch(() => null);
+                })();
             }
         } catch (err) {
-            const payload = { content: err.message || 'An error occurred.', ephemeral: true };
+            const payload = { content: err.message || 'An error occurred.', flags: 64 };
             if (interaction.deferred) await interaction.editReply(payload);
             else await interaction.reply(payload);
         }

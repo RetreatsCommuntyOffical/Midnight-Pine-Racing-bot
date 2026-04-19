@@ -191,7 +191,7 @@ function buildCreateModal() {
 
 // ── Handle modal: Apply submission ────────────────────────────────────────────
 async function handleApplySubmit(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const userId = interaction.user.id;
 
@@ -247,7 +247,7 @@ async function handleApplySubmit(interaction) {
 
 // ── Handle modal: Create Team submission ──────────────────────────────────────
 async function handleCreateSubmit(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     const userId = interaction.user.id;
 
