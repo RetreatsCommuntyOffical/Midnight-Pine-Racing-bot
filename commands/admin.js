@@ -4,6 +4,8 @@ const {
     setLeaderboardBan,
     clearLeaderboardBan,
     resetWeeklyBoards,
+    reloadTrafficRiskWeightsConfig,
+    triggerTelemetryLeaderboardPost,
 } = require('../core/admin/service');
 const { bulkSyncAutoRoles } = require('../core/racing/autoRoleService');
 
@@ -52,6 +54,23 @@ module.exports = {
                 type: 1,
                 name: 'sync-roles',
                 description: 'Re-sync all auto-assigned roles for every registered driver.',
+            },
+            {
+                type: 1,
+                name: 'reload-risk-weights',
+                description: 'Reload traffic risk weights from environment without restart.',
+                options: [
+                    { type: 3, name: 'reason', description: 'Reason', required: false },
+                ],
+            },
+            {
+                type: 1,
+                name: 'telemetry-post',
+                description: 'Force post telemetry leaderboard to street board (supports dry run).',
+                options: [
+                    { type: 5, name: 'dry_run', description: 'Preview only, do not post.', required: false },
+                    { type: 3, name: 'reason', description: 'Reason for audit log.', required: false },
+                ],
             },
         ],
     },
@@ -150,6 +169,62 @@ module.exports = {
                     ],
                 });
                 await interaction.editReply({ embeds: [syncEmbed] });
+                return;
+            }
+
+            if (sub === 'reload-risk-weights') {
+                const reason = interaction.options.getString('reason') || 'manual reload';
+                const weights = await reloadTrafficRiskWeightsConfig({
+                    actorDiscordId: interaction.user.id,
+                    reason,
+                });
+
+                const { successEmbed } = require('../core/ui/theme');
+                const reloadEmbed = successEmbed({
+                    title: '✅ Traffic Risk Weights Reloaded',
+                    description: 'Runtime risk weighting has been refreshed from environment.',
+                    fields: [
+                        { name: 'Booking', value: String(weights.Booking), inline: true },
+                        { name: 'Practice', value: String(weights.Practice), inline: true },
+                        { name: 'Qualifying', value: String(weights.Qualifying), inline: true },
+                        { name: 'Race', value: String(weights.Race), inline: true },
+                        { name: 'Offline', value: String(weights.Offline), inline: true },
+                        { name: 'Reason', value: reason, inline: false },
+                    ],
+                });
+
+                await interaction.reply({ embeds: [reloadEmbed], flags: 64 });
+                return;
+            }
+
+            if (sub === 'telemetry-post') {
+                const dryRun = interaction.options.getBoolean('dry_run') || false;
+                const reason = interaction.options.getString('reason') || 'manual telemetry post';
+                const result = await triggerTelemetryLeaderboardPost({
+                    actorDiscordId: interaction.user.id,
+                    reason,
+                    dryRun,
+                });
+
+                const { successEmbed, warnEmbed } = require('../core/ui/theme');
+                const posted = !!result.posted;
+                const embed = (posted ? successEmbed : warnEmbed)({
+                    title: posted ? '✅ Telemetry Leaderboard Posted' : '🧪 Telemetry Post Check',
+                    description: posted
+                        ? 'Telemetry leaderboard was posted to street board.'
+                        : 'Telemetry post request completed without sending a new embed.',
+                    fields: [
+                        { name: 'Posted', value: posted ? 'Yes' : 'No', inline: true },
+                        { name: 'Dry Run', value: dryRun ? 'Yes' : 'No', inline: true },
+                        { name: 'Reason', value: String(result.reason || 'none'), inline: true },
+                        { name: 'Top Score', value: String(result.topScore || 0), inline: true },
+                        { name: 'Rows', value: String(result.rowsPosted || 0), inline: true },
+                        { name: 'Signature', value: String(result.signature || 'n/a').slice(0, 120), inline: false },
+                    ],
+                });
+
+                await interaction.reply({ embeds: [embed], flags: 64 });
+                return;
             }
         } catch (err) {
             await interaction.reply({ content: err.message || 'Admin action failed.', flags: 64 });

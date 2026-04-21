@@ -14,7 +14,7 @@ const {
 
 const STAFF_ROLE_NAMES = ['👑 Admin', '🔧 Staff', '🛡️ Moderator', '🎙️ Host'];
 const HUB_EMBED_TITLE  = '🏁 Team Hub';
-const TEAM_HUB_BANNER_URL = String(process.env.TEAM_HUB_BANNER_URL || '').trim();
+const BannerStore = require('./racing/bannerStore');
 
 // In-memory dedup: userId → Set of open types ('apply' | 'create')
 const openHubChannels = new Map();
@@ -51,7 +51,8 @@ async function postTeamHubEmbed(client, channelId) {
         .setFooter({ text: 'Midnight Pine Racing  •  Team Hub' })
         .setTimestamp();
 
-    if (TEAM_HUB_BANNER_URL) embed.setImage(TEAM_HUB_BANNER_URL);
+    const teamHubBannerUrl = BannerStore.getBanner('team_hub');
+    if (teamHubBannerUrl) embed.setImage(teamHubBannerUrl);
 
     const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -322,7 +323,13 @@ async function handleCreateSubmit(interaction) {
 
 // ── Close a review channel ────────────────────────────────────────────────────
 async function closeReviewChannel(interaction) {
-    await interaction.deferReply();
+    // Guard against stale interactions (10062 Unknown interaction)
+    try {
+        await interaction.deferReply();
+    } catch (err) {
+        if (err.code === 10062) return; // Interaction expired — silently skip
+        throw err;
+    }
 
     // Extract userId and type from customId: teamhub_review_close_<userId>_<type>
     const parts  = interaction.customId.split('_'); // ['teamhub','review','close',userId,type]

@@ -39,7 +39,7 @@ const DESCRIPTION = [
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.once('ready', async () => {
+client.once('clientReady', async () => {
   console.log(`Logged in as ${client.user.tag}`);
   try {
     const channel = await client.channels.fetch(CHANNEL_ID);

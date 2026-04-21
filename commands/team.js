@@ -104,8 +104,10 @@ module.exports = {
                 const memberLines = profiles.map((p, i) => `${medals[i] || `**${i + 1}.**`} ${p.displayName} — ${p.totalPoints} pts · ${p.tier}`);
 
                 const embed = teamEmbed({
-                    title:  `👥 Team: ${team.name}`,
+                    title:       `👥 Team: ${team.name}`,
                     description: DIVIDER,
+                    thumbnail:   team.iconUrl   || undefined,
+                    image:       team.bannerUrl || undefined,
                     fields: [
                         { name: '🏆 Total Points', value: String(team.totalPoints),       inline: true  },
                         { name: '🥇 Wins',         value: String(team.teamWins),          inline: true  },

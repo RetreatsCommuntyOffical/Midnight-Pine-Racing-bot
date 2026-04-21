@@ -31,6 +31,8 @@ module.exports = {
         const embed = teamEmbed({
             title:       `👥 Team Stats — ${team.name}`,
             description: DIVIDER,
+            thumbnail:   team.iconUrl   || undefined,
+            image:       team.bannerUrl || undefined,
             fields: [
                 { name: '🏆 Total Points', value: String(team.totalPoints),          inline: true  },
                 { name: '🥇 Team Wins',    value: String(team.teamWins),             inline: true  },

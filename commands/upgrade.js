@@ -32,6 +32,7 @@ module.exports = {
                 discordId: interaction.user.id,
                 tier,
                 months,
+                idempotencyKey: `discord-upgrade-${interaction.id}`,
             });
 
             const icon = TIER_ICONS[tier] || '⭐';

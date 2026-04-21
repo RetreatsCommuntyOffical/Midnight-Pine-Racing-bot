@@ -5,20 +5,29 @@
     "main": "bot.js",
     "scripts": {
         "start": "node bot.js",
+        "start:live-server": "node server/server.js",
         "test": "node --test core/racing/points.test.js core/racing/dailyDigestService.test.js",
         "deploy:commands": "node deploy-commands.js",
         "digest:post-now": "node scripts/post-daily-digest-now.js",
         "force:update-all": "node scripts/force-update-all.js",
         "publish:banners": "node scripts/publish-banners.js",
-        "clean:embeds": "node scripts/clean-bot-embeds.js"
+        "clean:embeds": "node scripts/clean-bot-embeds.js",
+        "desktop": "electron desktop-app/electron-main.js"
     },
     "engines": {
         "node": ">=18.0.0"
     },
     "dependencies": {
+        "@fynnix/node-easy-ipc": "^1.1.4",
+        "ac-client": "^0.0.5",
+        "ac-sharedmem-client": "^0.0.7",
         "discord.js": "^14.16.0",
         "dotenv": "^16.4.5",
+        "express": "^4.22.1",
         "mongodb": "^7.1.1",
         "mongoose": "^7.8.0"
+    },
+    "devDependencies": {
+        "electron": "^41.2.2"
     }
 }

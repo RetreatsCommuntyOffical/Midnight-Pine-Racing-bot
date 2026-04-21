@@ -225,7 +225,7 @@ module.exports = { ticketService, TICKET_TYPES, postSupportHubEmbed };
 
 // ── Post or edit the persistent Support Hub embed ─────────────────────────────
 const SUPPORT_HUB_TITLE = '🏁 MIDNIGHT PINE RACING — SUPPORT HUB 🏁';
-const SUPPORT_HUB_BANNER_URL = String(process.env.SUPPORT_HUB_BANNER_URL || '').trim();
+const BannerStore = require('./racing/bannerStore');
 
 async function postSupportHubEmbed(client, channelId) {
     channelId = channelId || process.env.SUPPORT_HUB_CHANNEL_ID;
@@ -275,7 +275,8 @@ async function postSupportHubEmbed(client, channelId) {
         ].join('\n'))
         .setFooter({ text: 'Midnight Pine Racing  •  Support Hub' });
 
-    if (SUPPORT_HUB_BANNER_URL) embed.setImage(SUPPORT_HUB_BANNER_URL);
+    const supportHubBannerUrl = BannerStore.getBanner('support_hub');
+    if (supportHubBannerUrl) embed.setImage(supportHubBannerUrl);
 
     const row1 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('ticket_open_support').setLabel('General Support').setEmoji('🏎️').setStyle(ButtonStyle.Primary),

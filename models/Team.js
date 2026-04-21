@@ -9,6 +9,8 @@ const teamSchema = new mongoose.Schema(
         weeklyPoints:     { type: Number, default: 0 },
         teamWins:         { type: Number, default: 0 },
         events:           { type: Number, default: 0 },
+        iconUrl:          { type: String, default: null },
+        bannerUrl:        { type: String, default: null },
     },
     { timestamps: true }
 );

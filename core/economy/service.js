@@ -1,5 +1,6 @@
 const Wallet = require('../../models/Wallet');
 const Transaction = require('../../models/Transaction');
+const AdminAuditLog = require('../../models/AdminAuditLog');
 
 const SHOP_CATALOG = [
     { id: 'nitro-boost', name: 'Nitro XP Boost', price: 150, type: 'boost', description: '+25% XP for next event window.' },
@@ -31,6 +32,14 @@ async function applyTransaction({ discordId, amount, type, source, reason = '', 
     if (idempotencyKey) {
         const existing = await Transaction.findOne({ idempotencyKey });
         if (existing) {
+            // Log idempotency reuse for audit trail
+            await AdminAuditLog.create({
+                action: 'transaction_idempotency_reuse',
+                targetId: discordId,
+                actorId: 'economy-system',
+                reason: `Reused transaction for source=${source}`,
+                metadata: { idempotencyKey, transactionId: String(existing._id), amount: existing.amount, type: existing.type },
+            }).catch(() => null);
             return { reused: true, transaction: existing, balanceAfter: existing.balanceAfter };
         }
     }
@@ -46,7 +55,31 @@ async function applyTransaction({ discordId, amount, type, source, reason = '', 
         : { discordId };
 
     const wallet = await Wallet.findOneAndUpdate(query, update, { new: true });
-    if (!wallet) throw new Error('Insufficient balance.');
+    if (!wallet) {
+        // Log failed debit due to insufficient balance
+        await AdminAuditLog.create({
+            action: 'transaction_failed_insufficient_balance',
+            targetId: discordId,
+            actorId: 'economy-system',
+            reason: `Insufficient balance for debit of ${rawAmount} from source=${source}`,
+            metadata: { source, reason, amount: rawAmount, type },
+        }).catch(() => null);
+        throw new Error('Insufficient balance.');
+    }
+
+    // Validate balanceAfter is non-negative (should never fail due to schema constraint, but belt-and-suspenders)
+    const balanceAfter = Number(wallet.balance || 0);
+    if (balanceAfter < 0) {
+        console.error(`[CRITICAL] Negative balance detected after transaction update: ${discordId} balance=${balanceAfter}`);
+        await AdminAuditLog.create({
+            action: 'critical_negative_balance',
+            targetId: discordId,
+            actorId: 'economy-system',
+            reason: `Wallet balance went negative: ${balanceAfter}`,
+            metadata: { source, reason, amount: rawAmount, type, balanceAfter },
+        }).catch(() => null);
+        throw new Error('Critical: negative balance detected');
+    }
 
     try {
         const transaction = await Transaction.create({
@@ -57,15 +90,44 @@ async function applyTransaction({ discordId, amount, type, source, reason = '', 
             reason,
             metadata,
             idempotencyKey,
-            balanceAfter: Number(wallet.balance || 0),
+            balanceAfter,
         });
-        return { reused: false, transaction, balanceAfter: Number(wallet.balance || 0) };
+        // Log successful transaction for critical audit trail
+        if (type === 'debit' && amount >= 100) {
+            // Log high-value transactions
+            await AdminAuditLog.create({
+                action: 'high_value_transaction',
+                targetId: discordId,
+                actorId: 'economy-system',
+                reason: `${type} ${rawAmount} from source=${source}`,
+                metadata: { transactionId: String(transaction._id), source, amount: rawAmount, balanceAfter },
+            }).catch(() => null);
+        }
+        return { reused: false, transaction, balanceAfter };
     } catch (err) {
         // Compensate wallet if ledger write fails so balance and ledger never drift silently.
         const compensation = type === 'credit'
             ? { $inc: { balance: -rawAmount, totalEarned: -rawAmount } }
             : { $inc: { balance: rawAmount, totalSpent: -rawAmount } };
-        await Wallet.findOneAndUpdate({ discordId }, compensation).catch(() => null);
+        const compensationResult = await Wallet.findOneAndUpdate({ discordId }, compensation).catch((compErr) => {
+            // CRITICAL: Compensation failed. Log this immediately as a system integrity issue.
+            console.error(`[CRITICAL] Transaction compensation failed for ${discordId}:`, compErr.message);
+            AdminAuditLog.create({
+                action: 'transaction_compensation_failed',
+                targetId: discordId,
+                actorId: 'economy-system',
+                reason: `Wallet/transaction desync: failed to compensate wallet after ledger write failure`,
+                metadata: {
+                    source,
+                    reason,
+                    amount: rawAmount,
+                    type,
+                    originalError: err.message,
+                    compensationError: compErr.message,
+                },
+            }).catch(() => null);
+            return null;
+        });
         throw err;
     }
 }
@@ -92,7 +154,7 @@ async function buyShopItem({ discordId, itemId }) {
         source: `shop:${item.id}`,
         reason: `Purchased ${item.name}`,
         metadata: { itemId: item.id, itemType: item.type },
-        idempotencyKey: `shop-${discordId}-${item.id}-${Math.floor(now / 1000)}`,
+        idempotencyKey: `shop-${discordId}-${item.id}-${now}`,
     });
 
     wallet.lastPurchaseAt = new Date();
@@ -101,10 +163,70 @@ async function buyShopItem({ discordId, itemId }) {
     return { item, balanceAfter: result.balanceAfter };
 }
 
+/**
+ * Verify wallet balance consistency by comparing against transaction ledger.
+ * Useful for detecting wallet/transaction desync from failed compensations.
+ * Returns { consistent: boolean, wallet, calculatedBalance, discrepancy: number, issues: string[] }
+ */
+async function verifyWalletConsistency(discordId) {
+    const wallet = await Wallet.findOne({ discordId });
+    if (!wallet) return { consistent: true, wallet: null, reason: 'wallet_not_found' };
+
+    const transactions = await Transaction.find({ discordId });
+    let calculatedBalance = 0;
+    let totalEarned = 0;
+    let totalSpent = 0;
+    const issues = [];
+
+    for (const tx of transactions) {
+        const amount = Number(tx.amount || 0);
+        if (tx.type === 'credit') {
+            calculatedBalance += amount;
+            totalEarned += amount;
+        } else if (tx.type === 'debit') {
+            calculatedBalance -= amount;
+            totalSpent += amount;
+        }
+        // Validate each transaction's balanceAfter
+        if (Number(tx.balanceAfter) < 0) {
+            issues.push(`Transaction ${tx._id} has negative balanceAfter: ${tx.balanceAfter}`);
+        }
+    }
+
+    const walletBalance = Number(wallet.balance || 0);
+    const walletEarned = Number(wallet.totalEarned || 0);
+    const walletSpent = Number(wallet.totalSpent || 0);
+
+    const discrepancy = Math.abs(walletBalance - calculatedBalance);
+    const consistent = discrepancy === 0 && walletEarned === totalEarned && walletSpent === totalSpent;
+
+    if (!consistent) {
+        if (walletBalance !== calculatedBalance) {
+            issues.push(`Balance mismatch: wallet=${walletBalance}, calculated=${calculatedBalance}, diff=${discrepancy}`);
+        }
+        if (walletEarned !== totalEarned) {
+            issues.push(`TotalEarned mismatch: wallet=${walletEarned}, calculated=${totalEarned}`);
+        }
+        if (walletSpent !== totalSpent) {
+            issues.push(`TotalSpent mismatch: wallet=${walletSpent}, calculated=${totalSpent}`);
+        }
+    }
+
+    return {
+        consistent,
+        wallet,
+        calculatedBalance,
+        discrepancy,
+        issues,
+        transactionCount: transactions.length,
+    };
+}
+
 module.exports = {
     ensureWallet,
     getWalletSummary,
     applyTransaction,
     getShopCatalog,
     buyShopItem,
+    verifyWalletConsistency,
 };

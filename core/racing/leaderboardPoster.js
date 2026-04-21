@@ -2,18 +2,15 @@ const { EmbedBuilder } = require('discord.js');
 const mongoose = require('mongoose');
 const { getLeaderboard } = require('./service');
 const broker = require('../messageBroker');
+const BannerStore = require('./bannerStore');
 
-const SOLO_BANNER_URL    = process.env.SOLO_BOARD_BANNER_URL    || process.env.LEADERBOARDS_BANNER_URL || '';
-const STREET_BANNER_URL  = process.env.STREET_BOARD_BANNER_URL  || process.env.LEADERBOARDS_BANNER_URL || '';
-const CIRCUIT_BANNER_URL = process.env.CIRCUIT_BOARD_BANNER_URL || process.env.LEADERBOARDS_BANNER_URL || '';
-const TEAMS_BANNER_URL   = process.env.TEAMS_BANNER_URL          || process.env.LEADERBOARDS_BANNER_URL || '';
 const PIN_LEADERBOARD_MESSAGES = String(process.env.PIN_LEADERBOARD_MESSAGES || 'false').toLowerCase() === 'true';
 
-const BANNER_MAP = {
-    solo:    SOLO_BANNER_URL,
-    street:  STREET_BANNER_URL,
-    circuit: CIRCUIT_BANNER_URL,
-    teams:   TEAMS_BANNER_URL,
+const BANNER_TYPE_MAP = {
+    solo:    'solo',
+    street:  'street',
+    circuit: 'circuit',
+    teams:   'teams',
 };
 
 const DIVIDER = '━━━━━━━━━━━━━━━━━━';
@@ -81,7 +78,7 @@ async function buildLeaderboardEmbed(type, weekly = false) {
             .setDescription('Leaderboard data is temporarily unavailable — database is not connected.')
             .setTimestamp()
             .setFooter({ text: 'Midnight Pine Racing' });
-        const offlineBanner = BANNER_MAP[type] || '';
+        const offlineBanner = BannerStore.getBanner(BANNER_TYPE_MAP[type] || type);
         if (offlineBanner) offlineEmbed.setImage(offlineBanner);
         return offlineEmbed;
     }
@@ -112,7 +109,7 @@ async function buildLeaderboardEmbed(type, weekly = false) {
         .setTimestamp()
         .setFooter({ text: 'Midnight Pine Racing' });
 
-    const bannerUrl = BANNER_MAP[type] || '';
+    const bannerUrl = BannerStore.getBanner(BANNER_TYPE_MAP[type] || type);
     if (bannerUrl) embed.setImage(bannerUrl);
 
     return embed;

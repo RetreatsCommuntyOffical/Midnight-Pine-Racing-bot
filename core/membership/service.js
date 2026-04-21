@@ -77,7 +77,7 @@ async function syncMembership({ discordId, tier, expiresAt, source = 'webhook', 
     return row;
 }
 
-async function upgradeMembership({ discordId, tier, months = 1 }) {
+async function upgradeMembership({ discordId, tier, months = 1, idempotencyKey = null }) {
     const safeTier = TIERS[tier] ? tier : null;
     if (!safeTier || safeTier === 'none') throw new Error('Invalid membership tier.');
     const billingMonths = Math.max(1, Math.floor(Number(months || 1)));
@@ -90,6 +90,7 @@ async function upgradeMembership({ discordId, tier, months = 1 }) {
         type: 'debit',
         source: `membership:${safeTier}`,
         reason: `Membership upgrade to ${safeTier} (${billingMonths} month)` + (billingMonths > 1 ? 's' : ''),
+        idempotencyKey,
     });
 
     const current = await Membership.findOne({ discordId });

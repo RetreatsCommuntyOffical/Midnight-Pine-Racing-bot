@@ -23,6 +23,7 @@ const { postSupportHubEmbed } = require('./core/ticketService');
 const { startIntegrationWebhookServer } = require('./core/integration/webhookServer');
 const { setDiscordClient }               = require('./core/integration/webhookServer');
 const { setDiscordClient: setNotifClient } = require('./core/notifications/dispatcher');
+const BannerStore                        = require('./core/racing/bannerStore');
 const { startLinuxEmbedSyncScheduler }   = require('./core/integration/linuxEmbedSync');
 const { startLiveServersScheduler }      = require('./core/integration/liveServersService');
 const { handleMemberJoin }               = require('./core/welcomeService');
@@ -55,6 +56,9 @@ async function main() {
         installDiscordLogRelay(client, process.env.BOT_LOGS_CHANNEL_ID);
         setDiscordClient(client);
         setNotifClient(client);
+        BannerStore.setDiscordClient(client);
+        // Refresh banner URLs from logos channel on startup (non-blocking)
+        BannerStore.refreshFromChannel().catch(() => null);
         console.log(`✅ ${client.user.tag} online — ${commands.size} commands loaded`);
 
         startScheduler(client);

@@ -6,7 +6,7 @@ const client = new Client({
     partials: [Partials.Message, Partials.Channel, Partials.GuildMember],
 });
 
-client.once('ready', async () => {
+client.once('clientReady', async () => {
     try {
         const guild = await client.guilds.fetch(process.env.HOME_GUILD_ID);
         const channels = await guild.channels.fetch();

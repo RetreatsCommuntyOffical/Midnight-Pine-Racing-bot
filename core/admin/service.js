@@ -3,6 +3,7 @@ const LeaderboardBan = require('../../models/LeaderboardBan');
 const AdminAuditLog = require('../../models/AdminAuditLog');
 const { getTierFromPoints } = require('../racing/points');
 const { ensureDriverProfile, resetWeeklyPoints } = require('../racing/service');
+const { reloadTrafficRiskWeights } = require('../integration/desktopDashboardService');
 
 async function logAdminAction({ action, targetId, actorId, reason = '', metadata = {} }) {
     await AdminAuditLog.create({ action, targetId, actorId, reason, metadata });
@@ -81,9 +82,62 @@ async function resetWeeklyBoards({ actorDiscordId, reason = 'manual reset' }) {
     });
 }
 
+async function reloadTrafficRiskWeightsConfig({ actorDiscordId, reason = 'manual reload' }) {
+    const weights = reloadTrafficRiskWeights();
+    await logAdminAction({
+        action: 'reload_traffic_risk_weights',
+        targetId: 'system',
+        actorId: actorDiscordId,
+        reason,
+        metadata: { weights },
+    });
+    return weights;
+}
+
+async function triggerTelemetryLeaderboardPost({ actorDiscordId, reason = 'manual post', dryRun = false }) {
+    const base = String(process.env.TELEMETRY_API_BASE || 'http://127.0.0.1:3000').trim().replace(/\/$/, '');
+    const token = String(process.env.TELEMETRY_ADMIN_TOKEN || '').trim();
+
+    const target = new URL('/api/run/leaderboard/post', base);
+    target.searchParams.set('dryRun', dryRun ? 'true' : 'false');
+    target.searchParams.set('force', 'true');
+    target.searchParams.set('reason', reason);
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers['x-telemetry-admin-token'] = token;
+    }
+
+    const response = await fetch(target.toString(), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ dryRun, force: true, reason }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.error || `telemetry_post_failed_${response.status}`);
+    }
+
+    await logAdminAction({
+        action: 'telemetry_leaderboard_post',
+        targetId: 'system',
+        actorId: actorDiscordId,
+        reason,
+        metadata: {
+            dryRun: !!dryRun,
+            result: payload.result || {},
+        },
+    });
+
+    return payload.result || {};
+}
+
 module.exports = {
     adjustPlayerPoints,
     setLeaderboardBan,
     clearLeaderboardBan,
     resetWeeklyBoards,
+    reloadTrafficRiskWeightsConfig,
+    triggerTelemetryLeaderboardPost,
 };

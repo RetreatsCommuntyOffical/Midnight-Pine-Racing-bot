@@ -1,7 +1,7 @@
 ﻿require("dotenv").config();
 const { Client, GatewayIntentBits, ChannelType } = require("discord.js");
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-client.once("ready", async () => {
+client.once("clientReady", async () => {
     try {
         const guild = await client.guilds.fetch(process.env.HOME_GUILD_ID);
         if (!guild) {

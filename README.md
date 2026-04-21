@@ -57,6 +57,20 @@ This creates all categories, channels, and roles. Safe to re-run — existing it
 
 Posts the division role picker with Street Driver / Circuit Driver / Racer buttons.
 
+### 6. Optional: Tune traffic risk weights at runtime
+
+Set these variables in `.env`:
+
+```env
+TRAFFIC_RISK_WEIGHT_BOOKING=0.80
+TRAFFIC_RISK_WEIGHT_PRACTICE=1.00
+TRAFFIC_RISK_WEIGHT_QUALIFYING=1.15
+TRAFFIC_RISK_WEIGHT_RACE=1.30
+TRAFFIC_RISK_WEIGHT_OFFLINE=1.00
+```
+
+After saving `.env`, run `/admin reload-risk-weights` to apply values without restarting the bot.
+
 ---
 
 ## Command Reference
@@ -67,6 +81,19 @@ Posts the division role picker with Street Driver / Circuit Driver / Racer butto
 |---|---|---|
 | `/setup-midnight-pine` | Administrator | Auto-creates all roles, categories, and channels. Idempotent. |
 | `/roles post` | Manage Guild | Posts the division role picker embed with buttons. |
+
+---
+
+### 🛠️ Admin Controls
+
+| Command | Permission | Description |
+|---|---|---|
+| `/admin add-points` | Manage Guild | Add or remove points from a player. |
+| `/admin ban-leaderboard` | Manage Guild | Hide a player from all leaderboards. |
+| `/admin unban-leaderboard` | Manage Guild | Restore a player to leaderboards. |
+| `/admin reset-weekly` | Manage Guild | Reset weekly points and boards. |
+| `/admin sync-roles` | Manage Guild | Re-evaluate auto roles for all registered drivers. |
+| `/admin reload-risk-weights` | Manage Guild | Reload traffic risk weights from `.env` at runtime. |
 
 ---
 
@@ -224,6 +251,35 @@ pm2-startup install
 | Leaderboard refresh | Every 4 hours |
 | Event reminders (60 / 15 / 5 min) | Every 60 seconds |
 | Scheduled content drops | Every 60 seconds |
+
+---
+
+## Desktop Traffic Risk Tuning
+
+The desktop overview endpoint (`GET /desktop/overview`) computes live traffic risk using:
+
+- crashes per player
+- average speed
+- traffic density
+- session weighting (Booking, Practice, Qualifying, Race, Offline)
+
+Session weighting is controlled by:
+
+- `TRAFFIC_RISK_WEIGHT_BOOKING`
+- `TRAFFIC_RISK_WEIGHT_PRACTICE`
+- `TRAFFIC_RISK_WEIGHT_QUALIFYING`
+- `TRAFFIC_RISK_WEIGHT_RACE`
+- `TRAFFIC_RISK_WEIGHT_OFFLINE`
+
+Allowed range per value is `0.10` to `3.00`.
+
+To apply changed values without restart:
+
+1. Edit `.env`
+2. Run `/admin reload-risk-weights`
+3. Verify returned weight values in the command response
+
+Staff quick procedures and incident profiles are documented in [STAFF_RISK_RUNBOOK.md](STAFF_RISK_RUNBOOK.md).
 
 ---
 

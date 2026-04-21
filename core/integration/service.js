@@ -48,7 +48,7 @@ async function markSuspicious({ eventType, discordId, reason, payload }) {
     });
 }
 
-async function processDriftPoints({ discordId, payload }) {
+async function processDriftPoints({ eventId, discordId, payload }) {
     const points = Math.max(0, Math.round(Number(payload.points || 0)));
     const xpBase = Math.max(5, Math.round(points * 0.25));
     const coinBase = Math.max(3, Math.round(points * 0.15));
@@ -70,7 +70,7 @@ async function processDriftPoints({ discordId, payload }) {
         type: 'credit',
         source: 'integration_drift_points',
         reason: 'Drift points ingest reward',
-        idempotencyKey: `ingest-reward-${discordId}-${payload.eventId || Date.now()}`,
+        idempotencyKey: `drift-points-${eventId}`,
     });
 
     await recordChallengeMetric({ discordId, metric: 'drift_points', amount: points });
@@ -88,7 +88,7 @@ async function processDriftPoints({ discordId, payload }) {
     dispatchBigScore({ discordId, displayName: dName, points }).catch(() => null);
 }
 
-async function processEventWin({ discordId }) {
+async function processEventWin({ eventId, discordId }) {
     const profile = await ensureDriverProfile(discordId, null);
     profile.teamWins = Number(profile.teamWins || 0) + 1;
     await profile.save();
@@ -100,12 +100,13 @@ async function processEventWin({ discordId }) {
         type: 'credit',
         source: 'integration_event_win',
         reason: 'Event win reward',
+        idempotencyKey: `event-win-${eventId}`,
     });
 
     await recordChallengeMetric({ discordId, metric: 'event_participation', amount: 1 });
 }
 
-async function processTapUsed({ discordId, payload }) {
+async function processTapUsed({ eventId, discordId, payload }) {
     const profile = await ensureDriverProfile(discordId, payload.displayName || null);
     const tapsUsed = Math.max(0, Math.min(3, Number(payload.tapsUsed || 0)));
 
@@ -125,7 +126,7 @@ async function processTapUsed({ discordId, payload }) {
         type: 'credit',
         source: 'tap_boost_reward',
         reason: `Tap boost reward (×${tapsUsed + 1})`,
-        idempotencyKey: `tap-reward-${discordId}-${payload.eventId || Date.now()}`,
+        idempotencyKey: `tap-used-${eventId}`,
     });
 }
 
@@ -150,7 +151,7 @@ async function processExternalEvent({ eventId, eventType, discordId, payload = {
     }
 
     if (eventType === 'drift.points') {
-        await processDriftPoints({ discordId, payload: { ...payload, eventId } });
+        await processDriftPoints({ eventId, discordId, payload });
     } else if (eventType === 'drift.clean_run') {
         const profile = await ensureDriverProfile(discordId, payload.displayName || null);
         profile.noHesiRuns = Number(profile.noHesiRuns || 0) + 1;
@@ -161,9 +162,9 @@ async function processExternalEvent({ eventId, eventType, discordId, payload = {
     } else if (eventType === 'event.participation') {
         await recordChallengeMetric({ discordId, metric: 'event_participation', amount: 1 });
     } else if (eventType === 'event.win') {
-        await processEventWin({ discordId });
+        await processEventWin({ eventId, discordId });
     } else if (eventType === 'tap.used') {
-        await processTapUsed({ discordId, payload });
+        await processTapUsed({ eventId, discordId, payload });
     } else if (eventType === 'membership.sync') {
         await syncMembership({
             discordId,

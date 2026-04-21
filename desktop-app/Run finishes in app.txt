@@ -1,0 +1,9 @@
+Run finishes in app
+  → sendRunToBot()    POST /desktop/run       → bot updates DesktopPlayer stats
+  
+App polls every 30s
+  → fetchOverview()   GET /desktop/overview   → response includes desktopLeaderboard
+  → renderDesktopLeaderboard()                → Run Leaderboard card shows top desktop PBs
+
+Profile tab opened (Discord linked)
+  → fetchProfile()    GET /hud/state          → level, XP%, tier, taps rendered in Discord HUD card

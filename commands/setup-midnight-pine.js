@@ -3,8 +3,7 @@ const { refreshAllLeaderboards } = require('../core/racing/leaderboardPoster');
 const { postTeamHubEmbed } = require('../core/teamHubService');
 const { postSupportHubEmbed } = require('../core/ticketService');
 
-const WELCOME_BANNER_URL = String(process.env.WELCOME_BANNER_URL || '').trim();
-const ROLE_SELECTION_BANNER_URL = String(process.env.ROLE_SELECTION_BANNER_URL || '').trim();
+const BannerStore = require('../core/racing/bannerStore');
 
 const ROLES = [
     // ── Staff hierarchy ──────────────────────────────────────────────────────
@@ -278,7 +277,7 @@ async function refreshLayoutEmbeds(client, guild, results) {
             ].join('\n'))
             .setFooter({ text: 'Midnight Pine Racing' })
             .setTimestamp();
-        if (WELCOME_BANNER_URL) welcomeEmbed.setImage(WELCOME_BANNER_URL);
+        if (BannerStore.getBanner('welcome')) welcomeEmbed.setImage(BannerStore.getBanner('welcome'));
         await upsertBotEmbed(welcomeChannel, client, welcomeEmbed);
         results.embeds.push('Welcome');
         await new Promise((r) => setTimeout(r, 1200));
@@ -299,7 +298,7 @@ async function refreshLayoutEmbeds(client, guild, results) {
                 '━━━━━━━━━━━━━━━━━━\n' +
                 '_Click to add or remove. Toggle anytime._'
             );
-            if (ROLE_SELECTION_BANNER_URL) roleEmbed.setImage(ROLE_SELECTION_BANNER_URL);
+            if (BannerStore.getBanner('role_selection')) roleEmbed.setImage(BannerStore.getBanner('role_selection'));
 
         const row1 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('role_street').setLabel('🏎️ Street Driver').setStyle(ButtonStyle.Secondary),

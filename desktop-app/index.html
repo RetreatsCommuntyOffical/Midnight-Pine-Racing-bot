@@ -1,0 +1,1313 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Midnight Pine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- fog blobs injected by JS, but green one lives here for CSS access -->
+<div class="fog-green" aria-hidden="true"></div>
+
+<!-- ═══════════════════════ LOADING SCREEN ═══════════════════════ -->
+<div id="loadingScreen" class="loading-screen" role="status" aria-live="polite" aria-label="Loading Midnight Pine">
+  <div class="loading-container">
+    <div class="loading-logo">
+      <span class="logo-tree">🌲</span>
+    </div>
+    <h1 class="loading-title">MIDNIGHT PINE</h1>
+    <p class="loading-subtitle">Initializing grid...</p>
+    
+    <div class="loading-progress">
+      <div class="loading-bar-bg">
+        <div class="loading-bar" id="loadingBar"></div>
+      </div>
+      <div class="loading-percentage" id="loadingPercentage">0%</div>
+    </div>
+    
+    <div class="loading-status" id="loadingStatus">Starting up...</div>
+    
+    <div class="loading-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- fog blobs injected by JS, but green one lives here for CSS access -->
+<div class="fog-green" aria-hidden="true"></div>
+
+<!-- ═══════════════════════ LOGIN SCREEN ═══════════════════════ -->
+<div id="loginScreen" class="login-screen" role="dialog" aria-modal="true" aria-label="Sign in">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-tree">🌲</span>
+      <span class="logo-text">MIDNIGHT PINE</span>
+    </div>
+    <p class="login-tagline">The grid is live. Who's driving?</p>
+    <button id="discordLoginBtn" class="login-btn discord-login-btn">
+      <svg class="discord-login-icon" width="20" height="20" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.44077 45.4204 0.52529C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.52529C25.5141 0.44359 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385349 45.5576C6.45524 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 48.9718 48.5383C50.038 50.6034 51.2554 52.5699 52.5959 54.435C52.6519 54.5139 52.7526 54.5477 52.845 54.5195C58.6464 52.7249 64.5325 50.0174 70.6024 45.5576C70.6551 45.5182 70.6887 45.459 70.6943 45.3942C72.1747 30.0791 68.2147 16.7757 60.1968 4.9823C60.1772 4.9429 60.1437 4.9147 60.1045 4.8978Z" fill="currentColor"/></svg>
+      Login with Discord
+    </button>
+    <div class="login-divider"><span>or enter driver name</span></div>
+    <input id="usernameInput" class="login-input" type="text" placeholder="Your driver name" maxlength="32" autocomplete="off" spellcheck="false">
+    <div id="loginError" class="login-error" aria-live="polite"></div>
+    <button id="loginBtn" class="login-btn">ENTER THE GRID</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TIER SELECTION MODAL ═══════════════════════ -->
+<div id="tierModal" class="tier-modal" role="dialog" aria-modal="true" aria-label="Select your tier">
+  <div class="tier-modal-content">
+    <div class="tier-modal-header">
+      <h2>Choose Your Tier</h2>
+      <p>Start free or upgrade for advanced features.</p>
+    </div>
+    <div class="tier-cards-grid">
+      <div class="tier-card tier-card-free" data-tier="free">
+        <div class="tier-name">FREE</div>
+        <div class="tier-price">Forever</div>
+        <ul class="tier-features">
+          <li>✓ 50 runs/month</li>
+          <li>✓ Basic leaderboard</li>
+          <li>✓ Session stats</li>
+          <li>✗ Custom banners</li>
+          <li>✗ CSV export</li>
+        </ul>
+        <button class="tier-select-btn tier-select-free">Start Free</button>
+      </div>
+      <div class="tier-card tier-card-pro" data-tier="pro">
+        <div class="tier-badge">POPULAR</div>
+        <div class="tier-name">PRO</div>
+        <div class="tier-price">$9.99 <span class="tier-price-period">/month</span></div>
+        <ul class="tier-features">
+          <li>✓ Unlimited runs</li>
+          <li>✓ Custom banners</li>
+          <li>✓ CSV export</li>
+          <li>✓ Priority support</li>
+          <li>✗ API access</li>
+        </ul>
+        <button class="tier-select-btn tier-select-pro">Upgrade to Pro</button>
+      </div>
+      <div class="tier-card tier-card-elite" data-tier="elite">
+        <div class="tier-name">ELITE</div>
+        <div class="tier-price">$24.99 <span class="tier-price-period">/month</span></div>
+        <ul class="tier-features">
+          <li>✓ Everything in Pro</li>
+          <li>✓ Advanced analytics</li>
+          <li>✓ API access</li>
+          <li>✓ Custom themes</li>
+          <li>✓ White-label stats</li>
+        </ul>
+        <button class="tier-select-btn tier-select-elite">Upgrade to Elite</button>
+      </div>
+      <div class="tier-card tier-card-founder" data-tier="founder">
+        <div class="tier-badge">LEGENDARY</div>
+        <div class="tier-name">FOUNDER</div>
+        <div class="tier-price">$49.99 <span class="tier-price-period">/month</span></div>
+        <ul class="tier-features">
+          <li>✓ Everything in Elite</li>
+          <li>✓ Lifetime 50% off</li>
+          <li>✓ 1-on-1 support</li>
+          <li>✓ Early features</li>
+          <li>✓ Founder badge</li>
+        </ul>
+        <button class="tier-select-btn tier-select-founder">Join Founders</button>
+      </div>
+    </div>
+    <p class="tier-modal-note">You can change your tier anytime. Billing renews monthly on your card.</p>
+  </div>
+  <div class="tier-modal-overlay"></div>
+</div>
+
+<!-- ═══════════════════════ DISCORD CONNECTION MODAL ═══════════════════════ -->
+<div id="discordModal" class="discord-modal" role="dialog" aria-modal="true" aria-label="Connect Discord">
+  <div class="discord-modal-content">
+    <div class="discord-modal-header">
+      <h2>Connect Discord</h2>
+      <p>Unlock full career tracking and achievements.</p>
+    </div>
+    <div class="discord-connect-section">
+      <div class="discord-icon">🎮</div>
+      <p class="discord-desc">Your Discord account will be linked to your Midnight Pine driver profile. All runs, achievements, and career stats will be synced and accessible across devices.</p>
+      <button class="discord-connect-btn" id="discordConnectBtn">Connect with Discord</button>
+      <button class="discord-connect-btn discord-connect-cancel" id="discordCancelBtn">Cancel</button>
+    </div>
+    <div id="discordConnected" class="discord-connected-section discord-hidden">
+      <div class="discord-status-check">✓</div>
+      <p class="discord-status-text">Connected as <strong id="discordUsername">--</strong></p>
+      <div class="discord-sync-stats">
+        <div class="sync-stat"><span class="stat-val" id="discordSyncRuns">0</span><span class="stat-lbl">Runs Synced</span></div>
+        <div class="sync-stat"><span class="stat-val" id="discordSyncAchievements">0</span><span class="stat-lbl">Achievements</span></div>
+        <div class="sync-stat"><span class="stat-val" id="discordSyncStreak">0</span><span class="stat-lbl">Best Streak</span></div>
+      </div>
+      <button class="discord-connect-btn discord-disconnect-btn" id="discordDisconnectBtn">Disconnect</button>
+    </div>
+  </div>
+  <div class="discord-modal-overlay"></div>
+</div>
+
+<!-- ═══════════════════════ TOPBAR ═══════════════════════ -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-tree">🌲</span>
+    <span class="logo-text">MIDNIGHT PINE</span>
+  </div>
+  <div class="topbar-kpi">
+    <div class="kpi-chip">Telemetry&nbsp;<strong id="telemetrySourceText">--</strong></div>
+    <div class="kpi-chip">Run&nbsp;<strong id="homeRunModeText">IDLE</strong></div>
+    <div class="kpi-chip">Clean&nbsp;<strong id="homeCleanStateText">YES</strong></div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-meta api-health-badge" id="apiHealthBadge" title="Bot API connectivity"><span class="api-health-dot" id="apiHealthDot"></span><span id="apiHealthText">API</span></div>
+    <div class="topbar-meta"><span class="session-run-dot" id="sessionRunDot"></span>Session&nbsp;<span id="sessionTime">0s</span></div>
+    <div class="user-chip" id="userChip">
+      <span class="user-avatar" id="userAvatar">?</span>
+      <span class="user-name" id="userNameDisplay">--</span>
+      <button class="user-logout" id="logoutBtn" aria-label="Log out" title="Log out">&#x2715;</button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ APP SHELL ═══════════════════════ -->
+<div class="app">
+
+  <!-- ─────── SIDE NAV ─────── -->
+  <nav class="nav" aria-label="Primary navigation">
+    <button class="nav-btn active" data-tab="dashboard">
+      <span class="nav-icon">◈</span> Dashboard
+    </button>
+    <button class="nav-btn" data-tab="traffic">
+      <span class="nav-icon">◉</span> Traffic
+    </button>
+    <button class="nav-btn" data-tab="leaderboard">
+      <span class="nav-icon">◆</span> Leaderboard
+    </button>
+    <button class="nav-btn" data-tab="teams">
+      <span class="nav-icon">◇</span> Teams
+    </button>
+    <button class="nav-btn" data-tab="career">
+      <span class="nav-icon">📊</span> Career<span class="nav-badge" id="careerNavBadge"></span>
+    </button>
+    <button class="nav-btn" data-tab="servers">
+      <span class="nav-icon">▦</span> Servers<span class="nav-badge" id="serverNavBadge"></span>
+    </button>
+    <button class="nav-btn" data-tab="profile">
+      <span class="nav-icon">◉</span> Profile
+    </button>
+    <button class="nav-btn" data-tab="settings">
+      <span class="nav-icon">⚙</span> Settings
+    </button>
+    <button class="nav-btn hud-hidden nav-btn-owner" data-tab="admin" id="adminNavBtn">
+      <span class="nav-icon">⚡</span> Admin
+    </button>
+    <div class="nav-spacer"></div>
+    <button class="launch-btn" id="launchBtn">
+      <span>🚀</span> LAUNCH AC
+    </button>
+  </nav>
+
+  <!-- ─────── MAIN CONTENT ─────── -->
+  <main class="main">
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <section id="dashboard" class="tab active">
+
+      <!-- SESSION STATS STRIP -->
+      <div class="session-stats-strip" id="sessionStatsStrip">
+        <div class="ss-chip"><span class="ss-val" id="ssRuns">0</span><span class="ss-lbl">Runs</span></div>
+        <div class="ss-chip"><span class="ss-val accent-green-text" id="ssClean">0</span><span class="ss-lbl">Clean</span></div>
+        <div class="ss-chip"><span class="ss-val accent-purple-text" id="ssPBs">0</span><span class="ss-lbl">PBs</span></div>
+        <div class="ss-chip"><span class="ss-val" id="ssBestScore">--</span><span class="ss-lbl">Best Score</span></div>
+        <div class="ss-chip"><span class="ss-val" id="ssCleanPct">--%</span><span class="ss-lbl">Clean Rate</span></div>
+        <div class="ss-chip"><span class="ss-val accent-green-text" id="ssStreak">0</span><span class="ss-lbl">Streak</span></div>
+        <div class="ss-chip" id="ssVelocityChip"><span class="ss-val" id="ssVelocity">--</span><span class="ss-lbl">Velocity</span></div>
+      </div>
+
+      <!-- SESSION GOAL BAR -->
+      <div class="session-goal-bar sg-hidden" id="sessionGoalWrap">
+        <span class="sg-label">🎯 Goal: <strong id="sgTarget">--</strong></span>
+        <div class="sg-track"><div class="sg-fill" id="sgFill"></div></div>
+        <span class="sg-pct" id="sgPct">0%</span>
+        <button class="sg-clear" id="sgClearBtn" title="Clear goal">✕</button>
+      </div>
+      <div class="sg-setter-row">
+        <button class="sg-set-btn" id="sgSetBtn">🎯 Set Session Goal</button>
+      </div>
+
+      <!-- LIVE HUD STRIP -->
+      <div class="section-label">◈ LIVE TELEMETRY</div>
+      <div class="hud">
+        <div class="stat-block">
+          <div class="stat-val" id="speed">0</div>
+          <div class="stat-unit">KM/H</div>
+        </div>
+        <div class="stat-block accent-purple">
+          <div class="stat-val" id="liveScore">0</div>
+          <div class="stat-unit">SCORE</div>
+          <div class="score-progress"><div class="score-progress-fill" id="scoreProgressFill"></div></div>
+          <div class="stat-pb-delta" id="livePBDelta"></div>
+        </div>
+        <div class="stat-block accent-green">
+          <div class="stat-val" id="liveCombo">×1.0</div>
+          <div class="stat-unit">COMBO</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-val" id="rpm">0</div>
+          <div class="stat-unit">RPM</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-val gear-val" id="gear">N</div>
+          <div class="stat-unit">GEAR</div>
+        </div>
+      </div>
+
+      <!-- INFO CARDS ROW -->
+      <div class="section-label">◈ RUN DATA</div>
+      <div class="cards-row">
+
+        <div class="card">
+          <div class="card-header">Run Info</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Route</span>
+              <span class="dv" id="routeName">None</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Timer</span>
+              <span class="dv" id="runDuration">0s</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Score</span>
+              <span class="dv accent-purple-text" id="runScore">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Drift</span>
+              <span class="dv" id="driftScore">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Max Combo</span>
+              <span class="dv accent-green-text" id="maxCombo">×1.00</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Best Score</span>
+              <span class="dv" id="runBestScore">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Avg Speed</span>
+              <span class="dv" id="maxSpeed">0</span>
+              <span class="dv-unit">km/h</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-glow">
+          <div class="card-header">Status</div>
+          <div class="status-row">
+            <span class="status-dot offline" id="serverStatusDot"></span>
+            <span class="status-label" id="serverStatusText">OFFLINE</span>
+          </div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Run State</span>
+              <span class="dv" id="runStatus">IDLE</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Last Run</span>
+              <span class="dv" id="runLastScore">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Players</span>
+              <span class="dv" id="players">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Session</span>
+              <span class="dv" id="sessionText">-</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Updated</span>
+              <span class="dv dv-muted" id="lastUpdatedText">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /cards-row -->
+
+      <!-- LEADERBOARD + ASSETS ROW -->
+      <div class="section-label">◈ RANKINGS & ASSETS</div>
+      <div class="cards-row">
+
+        <div class="card">
+          <div class="card-header">
+            Run Leaderboard
+            <span class="card-badge" id="runBoardSource">memory</span>
+          </div>
+          <ul id="runBoardList" class="board-list">
+            <li>#1 No runs logged yet — get on the grid.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Brand Assets</div>
+          <p class="daily-msg" id="dailyMessageText">Keep it clean. Stay off the walls. The grid is watching.</p>
+          <div id="assetGallery" class="asset-gallery">
+            <p class="empty-msg">No assets available — check your API connection.</p>
+          </div>
+        </div>
+
+      </div><!-- /cards-row -->
+
+      <!-- hidden telemetry fields -->
+      <span id="position" hidden></span>
+
+      <!-- DRIVER INTELLIGENCE CARD -->
+      <div class="section-label">◈ DRIVER INTELLIGENCE</div>
+      <div class="card driver-intel-card">
+        <div class="intel-grid">
+          <div class="intel-stat">
+            <div class="intel-val" id="intelAllTimeRuns">0</div>
+            <div class="intel-lbl">All-Time Runs</div>
+          </div>
+          <div class="intel-stat">
+            <div class="intel-val accent-purple-text" id="intelAllTimeBest">0</div>
+            <div class="intel-lbl">All-Time Best</div>
+          </div>
+          <div class="intel-stat">
+            <div class="intel-val accent-green-text" id="intelBestStreak">0</div>
+            <div class="intel-lbl">Best Streak</div>
+          </div>
+          <div class="intel-stat">
+            <div class="intel-val" id="intelAvgScore">0</div>
+            <div class="intel-lbl">Avg Score</div>
+          </div>
+          <div class="intel-stat">
+            <div class="intel-val" id="intelCleanRate">0%</div>
+            <div class="intel-lbl">Career Clean</div>
+          </div>
+          <div class="intel-stat">
+            <div class="intel-val" id="intelTrend">—</div>
+            <div class="intel-lbl">3-Run Trend</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAP TIMER -->
+      <div class="section-label">◈ LAP TIMER</div>
+      <div class="card card-lap-timer">
+        <div class="lap-timer-display">
+          <div class="lap-time" id="lapTimeDisplay">00:00.000</div>
+          <div class="lap-status" id="lapStatus">STOPPED</div>
+        </div>
+        <div class="lap-timer-controls">
+          <button class="lap-btn lap-btn-start" id="lapStartBtn">&#9654; START</button>
+          <button class="lap-btn lap-btn-stop" id="lapStopBtn" disabled>&#9646;&#9646; STOP</button>
+          <button class="lap-btn lap-btn-reset" id="lapResetBtn">&#8635; RESET</button>
+        </div>
+        <ul class="lap-splits-list" id="lapSplitsList"></ul>
+        <p class="sc-note lap-timer-note">Press <kbd>T</kbd> to start/stop &mdash; <kbd>L</kbd> to log a split</p>
+      </div>
+
+    </section><!-- /dashboard -->
+
+    <!-- ══════════ TRAFFIC ══════════ -->
+    <section id="traffic" class="tab">
+      <div class="section-label">◉ LIVE TRAFFIC</div>
+
+      <div class="cards-row">
+
+        <div class="card">
+          <div class="card-header">Traffic Server</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Players</span>
+              <span class="dv" id="trafficPlayersText">0 / 0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Session</span>
+              <span class="dv" id="trafficSessionText">Offline</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Track</span>
+              <span class="dv" id="trafficTrackText">-</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">AI Density</span>
+              <span class="dv" id="trafficDensity">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Avg Speed</span>
+              <span class="dv" id="trafficSpeedText">0 mph</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Crashes</span>
+              <span class="dv danger-text" id="crashes">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-glow">
+          <div class="card-header">Risk Analysis</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Risk Level</span>
+              <span class="dv" id="trafficRiskText">Unknown</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Risk Score</span>
+              <span class="dv" id="trafficRiskScoreText">0</span>
+              <span class="dv-unit">/ 100</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Session Weight</span>
+              <span class="dv" id="trafficSessionWeightText">1.00×</span>
+            </div>
+          </div>
+          <div id="trafficBandPill" class="band-pill">Band: Unknown</div>
+        </div>
+
+      </div>
+
+      <div class="section-label">◉ SECTOR GRID</div>
+      <div class="card card-wide">
+        <div class="card-header">All Sectors</div>
+        <div class="server-grid">
+          <div class="server-tile" id="sectorMainTile">
+            <div class="tile-name">Mainline</div>
+            <div class="tile-status" id="sectorMainStatus">Offline</div>
+            <div class="tile-row"><span>Load</span><span id="sectorMainLoad">0 / 0</span></div>
+            <div class="tile-row"><span>Session</span><span id="sectorMainSession">-</span></div>
+          </div>
+          <div class="server-tile" id="sectorTrafficTile">
+            <div class="tile-name">Traffic</div>
+            <div class="tile-status" id="sectorTrafficStatus">Offline</div>
+            <div class="tile-row"><span>Load</span><span id="sectorTrafficLoad">0 / 0</span></div>
+            <div class="tile-row"><span>Session</span><span id="sectorTrafficSession">-</span></div>
+          </div>
+          <div class="server-tile" id="sectorDriftTile">
+            <div class="tile-name">Drift</div>
+            <div class="tile-status" id="sectorDriftStatus">Offline</div>
+            <div class="tile-row"><span>Load</span><span id="sectorDriftLoad">0 / 0</span></div>
+            <div class="tile-row"><span>Session</span><span id="sectorDriftSession">-</span></div>
+          </div>
+          <div class="server-tile" id="sectorRaceTile">
+            <div class="tile-name">Race</div>
+            <div class="tile-status" id="sectorRaceStatus">Offline</div>
+            <div class="tile-row"><span>Load</span><span id="sectorRaceLoad">0 / 0</span></div>
+            <div class="tile-row"><span>Session</span><span id="sectorRaceSession">-</span></div>
+          </div>
+          <div class="server-tile" id="sectorNordTile">
+            <div class="tile-name">Nord</div>
+            <div class="tile-status" id="sectorNordStatus">Offline</div>
+            <div class="tile-row"><span>Load</span><span id="sectorNordLoad">0 / 0</span></div>
+            <div class="tile-row"><span>Session</span><span id="sectorNordSession">-</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ LEADERBOARD ══════════ -->
+    <section id="leaderboard" class="tab">
+      <div class="section-label">◆ TOP DRIVERS</div>
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-header">Global Rankings</div>
+          <ul id="leaderboardList" class="board-list">
+            <li>#1 Waiting for live standings...</li>
+          </ul>
+        </div>
+        <div class="card card-glow">
+          <div class="card-header">Official Route</div>
+          <select id="routeSelect" aria-label="Select route" class="route-select">
+            <option>Midnight Highway</option>
+            <option>Pine Loop</option>
+          </select>
+          <ul id="routeLeaderboard" class="board-list">
+            <li>#1 Route data pending — select a route above.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ TEAMS ══════════ -->
+    <section id="teams" class="tab">
+      <div class="section-label">◇ TEAM STANDINGS</div>
+      <div class="card card-glow">
+        <div class="card-header">Top Team</div>
+        <div class="team-hero">
+          <div class="team-name" id="topTeamName">The Circle</div>
+          <div class="team-meta" id="topTeamMeta">Midnight Pine Racing — founding team</div>
+        </div>
+        <ul id="teamList" class="board-list">
+          <li>#1 The Circle — awaiting season data</li>
+        </ul>
+      </div>
+      <div class="card card-secondary">
+        <div class="card-header">Team Drilldown</div>
+        <div id="teamDrilldownWrap" class="drilldown-wrap">
+          <p class="empty-msg">No drilldown data — standings update after each event.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ CAREER ══════════ -->
+    <section id="career" class="tab">
+      <div class="section-label">📊 CAREER OVERVIEW
+        <button class="career-export-btn" id="careerExportBtn" title="Export career data as JSON">⬇ Export</button>
+      </div>
+      <div class="cards-row">
+        <div class="card card-glow career-hero-card">
+          <div class="career-avatar" id="careerAvatar">?</div>
+          <div class="career-meta">
+            <div class="career-name" id="careerName">--</div>
+            <div class="career-status" id="careerStatus">Local Driver</div>
+            <div class="rank-badge rank-rookie" id="careerRankBadge">ROOKIE</div>
+          </div>
+          <div class="career-stats-grid">
+            <div class="career-stat"><div class="cs-val" id="careerTotalRuns">0</div><div class="cs-lbl">Total Runs</div></div>
+            <div class="career-stat"><div class="cs-val" id="careerBestScore">0</div><div class="cs-lbl">Best Score</div></div>
+            <div class="career-stat"><div class="cs-val" id="careerTotalScore">0</div><div class="cs-lbl">Total Score</div></div>
+            <div class="career-stat"><div class="cs-val" id="careerCleanRate">0%</div><div class="cs-lbl">Clean Rate</div></div>
+          </div>
+          <div class="career-trend-label">Score Trend (last 10)</div>
+          <div class="career-trend" id="careerTrend"></div>
+          <div class="rank-progress-wrap">
+            <div class="rank-progress-meta">
+              <span class="rank-progress-current" id="rankProgressCurrent">ROOKIE</span>
+              <span class="rank-progress-next" id="rankProgressNext">→ AMATEUR</span>
+            </div>
+            <div class="rank-progress-track"><div class="rank-progress-fill" id="rankProgressFill"></div></div>
+            <div class="rank-progress-hint" id="rankProgressHint"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Career Milestones</div>
+          <div class="milestones-list">
+            <div class="milestone"><span class="ms-icon">🏁</span><span class="ms-text" id="m1">First run pending</span></div>
+            <div class="milestone"><span class="ms-icon">🔟</span><span class="ms-text" id="m2">10 runs pending</span></div>
+            <div class="milestone"><span class="ms-icon">💯</span><span class="ms-text" id="m3">100 runs pending</span></div>
+            <div class="milestone"><span class="ms-icon">📈</span><span class="ms-text" id="m4">Personal record pending</span></div>
+            <div class="milestone"><span class="ms-icon">🔥</span><span class="ms-text" id="m5">Score 1000 pending</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Active Streaks</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Current Clean</span>
+              <span class="dv accent-green-text" id="careerCurrentStreak">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Best Clean</span>
+              <span class="dv accent-green-text" id="careerBestStreak">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Total Crashes</span>
+              <span class="dv danger-text" id="careerCrashes">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Personal Bests</span>
+              <span class="dv accent-purple-text" id="careerPBs">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Average Score</span>
+              <span class="dv" id="careerAvgScore">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">🏆 ACHIEVEMENTS</div>
+      <div class="card">
+        <div class="card-header">
+          Unlocked: <span class="achievement-count" id="achievementCount">0</span> / 10
+        </div>
+        <div class="achievements-grid">
+          <div class="achievement-card" id="ach_first_run">
+            <div class="ach-icon">🏁</div>
+            <div class="ach-name">First Run</div>
+            <div class="ach-desc">Completed your first run</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_first_run"></div></div>
+            <div class="ach-progress-label" id="achl_first_run">0 / 1</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_ten_runs">
+            <div class="ach-icon">🔟</div>
+            <div class="ach-name">Decade</div>
+            <div class="ach-desc">Completed 10 runs</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_ten_runs"></div></div>
+            <div class="ach-progress-label" id="achl_ten_runs">0 / 10</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_hundred_runs">
+            <div class="ach-icon">💯</div>
+            <div class="ach-name">Century</div>
+            <div class="ach-desc">Completed 100 runs</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_hundred_runs"></div></div>
+            <div class="ach-progress-label" id="achl_hundred_runs">0 / 100</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_clean_streak_5">
+            <div class="ach-icon">✨</div>
+            <div class="ach-name">Flawless</div>
+            <div class="ach-desc">5 clean runs in a row</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_clean_streak_5"></div></div>
+            <div class="ach-progress-label" id="achl_clean_streak_5">0 / 5</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_clean_streak_10">
+            <div class="ach-icon">⭐</div>
+            <div class="ach-name">Perfect</div>
+            <div class="ach-desc">10 clean runs in a row</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_clean_streak_10"></div></div>
+            <div class="ach-progress-label" id="achl_clean_streak_10">0 / 10</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_score_1000">
+            <div class="ach-icon">🔥</div>
+            <div class="ach-name">Pyro</div>
+            <div class="ach-desc">Score over 1000 in a single run</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_score_1000"></div></div>
+            <div class="ach-progress-label" id="achl_score_1000">0 / 1000</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_pb_five">
+            <div class="ach-icon">📈</div>
+            <div class="ach-name">Climber</div>
+            <div class="ach-desc">Set 5 personal bests</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_pb_five"></div></div>
+            <div class="ach-progress-label" id="achl_pb_five">0 / 5</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_combo_5x">
+            <div class="ach-icon">✖️ 5.0</div>
+            <div class="ach-name">Multiplier</div>
+            <div class="ach-desc">Achieve 5.0× combo</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_combo_5x"></div></div>
+            <div class="ach-progress-label" id="achl_combo_5x">0 / 5000</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_no_crashes_ten">
+            <div class="ach-icon">🛡️</div>
+            <div class="ach-name">Guardian</div>
+            <div class="ach-desc">10 runs without a crash</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_no_crashes_ten"></div></div>
+            <div class="ach-progress-label" id="achl_no_crashes_ten">0 / 10</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+          <div class="achievement-card" id="ach_total_score_10k">
+            <div class="ach-icon">💎</div>
+            <div class="ach-name">Gem</div>
+            <div class="ach-desc">Accumulate 10,000 total score</div>
+            <div class="ach-progress-wrap"><div class="ach-progress-fill" id="achp_total_score_10k"></div></div>
+            <div class="ach-progress-label" id="achl_total_score_10k">0 / 10,000</div>
+            <div class="ach-status locked">LOCKED</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">⭐ CAREER HIGHLIGHTS</div>
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-header">Best Run</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Score</span>
+              <span class="dv accent-purple-text" id="highlightBestScore">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Combo</span>
+              <span class="dv accent-green-text" id="highlightBestCombo">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Date</span>
+              <span class="dv dv-muted" id="highlightBestDate">--</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Latest Run</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Score</span>
+              <span class="dv" id="highlightLatestScore">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Status</span>
+              <span class="dv" id="highlightLatestStatus">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Time</span>
+              <span class="dv dv-muted" id="highlightLatestTime">--</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Session Stats</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Runs Today</span>
+              <span class="dv" id="highlightSessionRuns">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Best Today</span>
+              <span class="dv accent-purple-text" id="highlightSessionBest">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Session Avg</span>
+              <span class="dv" id="highlightSessionAvg">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">🗺️ ROUTE PERSONAL BESTS</div>
+      <div class="card">
+        <div class="card-header">Best Score Per Route</div>
+        <div id="routePBList" class="route-pb-list">
+          <p class="empty-msg">No route data yet — complete runs to populate.</p>
+        </div>
+      </div>
+
+      <div class="section-label">📈 PER-ROUTE ANALYTICS</div>
+      <div class="card">
+        <div class="card-header">Route Deep Stats</div>
+        <div id="routeAnalyticsList" class="route-analytics-list">
+          <p class="empty-msg">Complete runs on multiple routes to see analytics.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SERVERS ══════════ -->
+    <section id="servers" class="tab">
+      <div class="section-label">▦ LIVE SERVERS</div>
+      <div class="server-cards-grid" id="serverCardsGrid">
+
+        <!-- Mainline -->
+        <div class="srv-card" id="srvCardMain" data-server="main">
+          <div class="srv-banner srv-banner-main">
+            <div class="srv-banner-overlay"></div>
+            <div class="srv-status-badge" id="srvStatusMain">OFFLINE</div>
+            <div class="srv-title-block">
+              <div class="srv-name">The Mainline</div>
+              <div class="srv-subtitle">Open circuit · ranked · gates open at sunset</div>
+            </div>
+          </div>
+          <div class="srv-body">
+            <div class="srv-stat-row">
+              <div class="srv-stat"><span class="srv-stat-val" id="srvPlayersMain">0</span><span class="srv-stat-lbl">Players</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvCapMain">0</span><span class="srv-stat-lbl">Capacity</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvSessionMain">-</span><span class="srv-stat-lbl">Session</span></div>
+            </div>
+            <div class="srv-load-bar-wrap">
+              <div class="srv-load-bar"><div class="srv-load-fill" id="srvLoadMain"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Traffic -->
+        <div class="srv-card" id="srvCardTraffic" data-server="traffic">
+          <div class="srv-banner srv-banner-traffic">
+            <div class="srv-banner-overlay"></div>
+            <div class="srv-status-badge" id="srvStatusTraffic">OFFLINE</div>
+            <div class="srv-title-block">
+              <div class="srv-name">Midnight City</div>
+              <div class="srv-subtitle">Neon streets · full AI traffic · open world</div>
+            </div>
+          </div>
+          <div class="srv-body">
+            <div class="srv-stat-row">
+              <div class="srv-stat"><span class="srv-stat-val" id="srvPlayersTraffic">0</span><span class="srv-stat-lbl">Players</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvCapTraffic">0</span><span class="srv-stat-lbl">Capacity</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvSessionTraffic">-</span><span class="srv-stat-lbl">Session</span></div>
+            </div>
+            <div class="srv-load-bar-wrap">
+              <div class="srv-load-bar"><div class="srv-load-fill" id="srvLoadTraffic"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drift -->
+        <div class="srv-card" id="srvCardDrift" data-server="drift">
+          <div class="srv-banner srv-banner-drift">
+            <div class="srv-banner-overlay"></div>
+            <div class="srv-status-badge" id="srvStatusDrift">OFFLINE</div>
+            <div class="srv-title-block">
+              <div class="srv-name">Pine Drift</div>
+              <div class="srv-subtitle">Forest twisties · smoke-on-contact · tandem welcome</div>
+            </div>
+          </div>
+          <div class="srv-body">
+            <div class="srv-stat-row">
+              <div class="srv-stat"><span class="srv-stat-val" id="srvPlayersDrift">0</span><span class="srv-stat-lbl">Players</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvCapDrift">0</span><span class="srv-stat-lbl">Capacity</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvSessionDrift">-</span><span class="srv-stat-lbl">Session</span></div>
+            </div>
+            <div class="srv-load-bar-wrap">
+              <div class="srv-load-bar"><div class="srv-load-fill" id="srvLoadDrift"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Race -->
+        <div class="srv-card" id="srvCardRace" data-server="race">
+          <div class="srv-banner srv-banner-race">
+            <div class="srv-banner-overlay"></div>
+            <div class="srv-status-badge" id="srvStatusRace">OFFLINE</div>
+            <div class="srv-title-block">
+              <div class="srv-name">Race Command</div>
+              <div class="srv-subtitle">Sanctioned events · league points · podium payouts</div>
+            </div>
+          </div>
+          <div class="srv-body">
+            <div class="srv-stat-row">
+              <div class="srv-stat"><span class="srv-stat-val" id="srvPlayersRace">0</span><span class="srv-stat-lbl">Players</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvCapRace">0</span><span class="srv-stat-lbl">Capacity</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvSessionRace">-</span><span class="srv-stat-lbl">Session</span></div>
+            </div>
+            <div class="srv-load-bar-wrap">
+              <div class="srv-load-bar"><div class="srv-load-fill" id="srvLoadRace"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nord -->
+        <div class="srv-card" id="srvCardNord" data-server="nord">
+          <div class="srv-banner srv-banner-nord">
+            <div class="srv-banner-overlay"></div>
+            <div class="srv-status-badge" id="srvStatusNord">OFFLINE</div>
+            <div class="srv-title-block">
+              <div class="srv-name">The Ring</div>
+              <div class="srv-subtitle">20.8km of darkness · free roam · lap timing active</div>
+            </div>
+          </div>
+          <div class="srv-body">
+            <div class="srv-stat-row">
+              <div class="srv-stat"><span class="srv-stat-val" id="srvPlayersNord">0</span><span class="srv-stat-lbl">Players</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvCapNord">0</span><span class="srv-stat-lbl">Capacity</span></div>
+              <div class="srv-stat"><span class="srv-stat-val" id="srvSessionNord">-</span><span class="srv-stat-lbl">Session</span></div>
+            </div>
+            <div class="srv-load-bar-wrap">
+              <div class="srv-load-bar"><div class="srv-load-fill" id="srvLoadNord"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="section-label">▦ SERVER SUMMARY</div>
+      <div class="cards-row">
+        <div class="card card-glow">
+          <div class="card-header">Network Status</div>
+          <div class="data-rows">
+            <div class="data-row"><span class="dl">Online Servers</span><span class="dv accent-green-text" id="srvSummaryOnline">0 / 5</span></div>
+            <div class="data-row"><span class="dl">Total Players</span><span class="dv" id="srvSummaryPlayers">0</span></div>
+            <div class="data-row"><span class="dl">Total Capacity</span><span class="dv" id="srvSummaryCapacity">0</span></div>
+            <div class="data-row"><span class="dl">Last Updated</span><span class="dv dv-muted" id="srvSummaryUpdated">-</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Most Active</div>
+          <div class="data-rows">
+            <div class="data-row"><span class="dl">Server</span><span class="dv" id="srvMostActiveName">--</span></div>
+            <div class="data-row"><span class="dl">Players</span><span class="dv accent-purple-text" id="srvMostActivePlayers">0</span></div>
+            <div class="data-row"><span class="dl">Session</span><span class="dv" id="srvMostActiveSession">-</span></div>
+            <div class="data-row"><span class="dl">Fill Rate</span><span class="dv accent-green-text" id="srvMostActivePct">0%</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PROFILE ══════════ -->
+    <section id="profile" class="tab">
+      <div class="section-label">◎ DRIVER PROFILE</div>
+      <div class="cards-row">
+
+        <div class="card card-glow">
+          <div class="card-header">Identity</div>
+          <div class="profile-hero">
+            <div class="profile-avatar-lg" id="profileAvatarLg">?</div>
+            <div class="profile-name-lg" id="profileNameLg">--</div>
+            <div class="profile-badge-chip">Local Driver</div>
+            <div class="rank-badge rank-rookie" id="profileRankBadge">ROOKIE</div>
+          </div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Total Time</span>
+              <span class="dv" id="profileTotalTime">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Sessions</span>
+              <span class="dv" id="profileSessions">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Last Seen</span>
+              <span class="dv dv-muted" id="profileLastSeen">--</span>
+            </div>
+          </div>
+          <div class="profile-discord-hint">
+            🔗 Connect Discord to unlock full career tracking
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">This Session</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Time Online</span>
+              <span class="dv" id="profileSessionTime">0s</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Crashes</span>
+              <span class="dv danger-text" id="profileCrashes">0</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Best Score</span>
+              <span class="dv accent-purple-text" id="profileBestScore">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Max Combo</span>
+              <span class="dv accent-green-text" id="profileMaxCombo">×1.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-glow" id="discordStatusCard">
+          <div class="card-header">Discord Connection</div>
+          <div class="discord-status-inline" id="discordStatusInline">
+            <div class="discord-disconnected">
+              <div class="status-icon">⊘</div>
+              <div class="status-text">Not connected</div>
+              <button class="discord-quick-connect" id="discordQuickConnectBtn">🔗 Connect Now</button>
+            </div>
+          </div>
+          <div id="discordStatusConnected" class="discord-hidden">
+            <div class="discord-connected-inline">
+              <div class="status-icon">✓</div>
+              <div class="status-info">
+                <div class="status-user" id="discordUserDisplay">Connected</div>
+                <div class="status-detail">Career tracking active</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card hud-hidden" id="discordHudWrap">
+          <div class="card-header">Discord HUD</div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Level</span>
+              <span class="dv accent-purple-text" id="discordHudLevel">Lv. --</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">XP Progress</span>
+              <span class="dv">
+                <span class="hud-xp-track"><span class="hud-xp-fill" id="discordHudXp"></span></span>
+              </span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Tier</span>
+              <span class="dv accent-green-text" id="discordHudTier">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Taps</span>
+              <span class="dv dv-muted" id="discordHudTaps">-- / 3</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-glow">
+          <div class="card-header">Your Tier</div>
+          <div class="tier-status-display">
+            <div class="tier-status-badge" id="tierStatusBadge">FREE</div>
+            <div class="tier-status-meta" id="tierStatusMeta">
+              <div class="tier-renewal-countdown" id="tierRenewalCountdown"></div>
+            </div>
+          </div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Current Plan</span>
+              <span class="dv" id="tierPlanName">Free Plan</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Renewal Date</span>
+              <span class="dv dv-muted" id="tierRenewalDate">Never</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Runs Used</span>
+              <span class="dv" id="tierRunsUsed">0 / 50</span>
+            </div>
+          </div>
+          <button class="tier-upgrade-btn" id="tierUpgradeBtn">Upgrade Tier</button>
+        </div>
+
+      </div>
+
+      <div class="section-label">◎ RUN HISTORY</div>
+      <div class="card">
+        <div class="card-header">Recent Runs <span class="run-history-count" id="runHistoryCount"></span><button class="rh-export-btn rh-export-hidden" id="exportRunHistoryBtn" aria-label="Export run history as CSV">⬇ Export CSV</button></div>
+        <div class="rh-filter-bar">
+          <button class="rh-filter-btn active" data-filter="all">All</button>
+          <button class="rh-filter-btn" data-filter="clean">Clean</button>
+          <button class="rh-filter-btn" data-filter="crash">Crashed</button>
+          <button class="rh-filter-btn" data-filter="pb">PBs Only</button>
+          <input class="rh-search-input" id="rhRouteSearch" type="text" placeholder="Filter by route..." aria-label="Filter run history by route">
+        </div>
+        <ul class="run-history-list" id="runHistoryList">
+          <li class="rh-empty">No runs logged yet. Get on the grid.</li>
+        </ul>
+      </div>
+
+      <div class="section-label">⏱ SESSION TIMELINE</div>
+      <div class="card">
+        <div class="card-header">Run Sequence This Session</div>
+        <div class="session-timeline" id="sessionTimeline">
+          <p class="empty-msg">No runs this session yet.</p>
+        </div>
+      </div>
+
+      <div class="section-label">◎ SCORE CHART</div>
+      <div class="card">
+        <div class="card-header">Last 10 Runs</div>
+        <div class="score-chart" id="scoreChart">
+          <p class="empty-msg">No runs to chart yet.</p>
+        </div>
+        <div class="card-sub-header">Score Distribution</div>
+        <div class="score-histogram" id="scoreHistogram">
+          <p class="empty-msg">Need 3+ runs for distribution.</p>
+        </div>
+      </div>
+
+      <div class="section-label">◎ AUDIO SETTINGS</div>
+      <div class="card">
+        <div class="card-header">Sound Effects</div>
+        <div class="sound-controls">
+          <label class="sound-toggle-label">
+            <input type="checkbox" id="soundEnabled" checked>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span>Enable Sound Effects</span>
+          </label>
+          <div class="sound-test-btns">
+            <button class="sound-test-btn" data-sound="combo">▶ Combo Tick</button>
+            <button class="sound-test-btn" data-sound="complete">▶ Run Complete</button>
+            <button class="sound-test-btn" data-sound="warning">▶ Warning</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SETTINGS ══════════ -->
+    <section id="settings" class="tab">
+      <div class="section-label">⚙ CONNECTION</div>
+      <div class="cards-row">
+
+        <div class="card card-glow">
+          <div class="card-header">Integration API</div>
+          <div class="settings-form">
+            <div class="sf-row">
+              <label class="sf-label" for="settingApiBase">Server URL</label>
+              <input class="sf-input" id="settingApiBase" type="text" placeholder="http://127.0.0.1:8788" spellcheck="false" autocomplete="off">
+              <div class="sf-hint">Override the API base URL. Leave blank to auto-detect.</div>
+            </div>
+            <div class="sf-row">
+              <label class="sf-label" for="settingApiToken">Auth Token</label>
+              <input class="sf-input" id="settingApiToken" type="password" placeholder="optional token" autocomplete="off">
+              <div class="sf-hint">DESKTOP_APP_TOKEN from your .env (optional).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Telemetry Source</div>
+          <div class="settings-form">
+            <div class="sf-row">
+              <label class="sf-label" for="settingTelemetryUrl">Telemetry URL</label>
+              <input class="sf-input" id="settingTelemetryUrl" type="text" placeholder="http://localhost:3000/api/telemetry" spellcheck="false" autocomplete="off">
+              <div class="sf-hint">AC HUD telemetry endpoint. Restart app after changing.</div>
+            </div>
+            <div class="sf-row">
+              <label class="sf-label" for="settingAcPath">AC Executable Path</label>
+              <input class="sf-input" id="settingAcPath" type="text" placeholder="C:\Program Files (x86)\Steam\...\acs.exe" spellcheck="false" autocomplete="off">
+              <div class="sf-hint">Used by the Launch AC button.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="section-label">⚙ DISPLAY</div>
+      <div class="cards-row">
+
+        <div class="card">
+          <div class="card-header">HUD Options</div>
+          <div class="settings-form">
+            <div class="sf-row sf-toggle-row">
+              <label class="sf-label">Show Session Stats Strip</label>
+              <label class="sound-toggle-label">
+                <input type="checkbox" id="settingShowStatsStrip" aria-label="Show Session Stats Strip" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="sf-row sf-toggle-row">
+              <label class="sf-label">Speed Reactivity (warn / danger glow)</label>
+              <label class="sound-toggle-label">
+                <input type="checkbox" id="settingSpeedReact" aria-label="Speed Reactivity" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="sf-row sf-toggle-row">
+              <label class="sf-label">Light Theme</label>
+              <label class="sound-toggle-label">
+                <input type="checkbox" id="settingLightTheme" aria-label="Light Theme">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Data</div>
+          <div class="settings-form">
+            <div class="sf-row sf-btn-row">
+              <span class="sf-label">Run History</span>
+              <button class="sf-btn sf-btn-danger" id="settingClearHistory">Clear History</button>
+            </div>
+            <div class="sf-row sf-btn-row">
+              <span class="sf-label">All Settings</span>
+              <button class="sf-btn" id="settingResetAll">Reset to Defaults</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="section-label">⚙ KEYBOARD SHORTCUTS</div>
+      <div class="card">
+        <div class="card-header">Hotkeys</div>
+        <div class="shortcut-grid">
+          <div class="sc-row"><kbd>1</kbd><span>Dashboard</span></div>
+          <div class="sc-row"><kbd>2</kbd><span>Traffic</span></div>
+          <div class="sc-row"><kbd>3</kbd><span>Leaderboard</span></div>
+          <div class="sc-row"><kbd>4</kbd><span>Teams</span></div>
+          <div class="sc-row"><kbd>5</kbd><span>Servers</span></div>
+          <div class="sc-row"><kbd>6</kbd><span>Profile</span></div>
+          <div class="sc-row"><kbd>7</kbd><span>Settings</span></div>
+          <div class="sc-row"><kbd>M</kbd><span>Toggle Sound Mute</span></div>
+          <div class="sc-row"><kbd>T</kbd><span>Lap Timer Start / Stop</span></div>
+          <div class="sc-row"><kbd>L</kbd><span>Log Lap Split</span></div>
+          <div class="sc-row"><kbd>Esc</kbd><span>Dismiss Toast</span></div>
+        </div>
+        <p class="sc-note">Shortcuts are disabled when typing in an input field.</p>
+      </div>
+
+      <div class="section-label">⚙ SERVER BANNERS</div>
+      <div class="card">
+        <div class="card-header">Custom Banner Images</div>
+        <div class="settings-form">
+          <div class="sf-row">
+            <label class="sf-label" for="settingBannerMain">The Mainline</label>
+            <input class="sf-input" id="settingBannerMain" type="url" placeholder="https://..." spellcheck="false" autocomplete="off">
+            <div class="sf-hint">Direct image URL. Leave blank to use default.</div>
+          </div>
+          <div class="sf-row">
+            <label class="sf-label" for="settingBannerTraffic">Midnight City</label>
+            <input class="sf-input" id="settingBannerTraffic" type="url" placeholder="https://..." spellcheck="false" autocomplete="off">
+          </div>
+          <div class="sf-row">
+            <label class="sf-label" for="settingBannerDrift">Pine Drift</label>
+            <input class="sf-input" id="settingBannerDrift" type="url" placeholder="https://..." spellcheck="false" autocomplete="off">
+          </div>
+          <div class="sf-row">
+            <label class="sf-label" for="settingBannerRace">Race Command</label>
+            <input class="sf-input" id="settingBannerRace" type="url" placeholder="https://..." spellcheck="false" autocomplete="off">
+          </div>
+          <div class="sf-row">
+            <label class="sf-label" for="settingBannerNord">The Ring</label>
+            <input class="sf-input" id="settingBannerNord" type="url" placeholder="https://..." spellcheck="false" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-save-row">
+        <button class="settings-save-btn" id="settingsSave">&#x2713; Save Settings</button>
+        <span class="settings-saved-label" id="settingsSavedLabel"></span>
+      </div>
+    </section>
+
+    <!-- ══════════ ADMIN ══════════ -->
+    <section id="admin" class="tab">
+      <div class="section-label">⚡ BOT CONTROL PANEL <span class="admin-owner-badge">OWNER</span></div>
+
+      <div class="cards-row">
+
+        <!-- Bot Status card -->
+        <div class="card card-glow admin-card">
+          <div class="card-header">Bot Status
+            <button class="admin-action-btn" id="adminRefreshStatusBtn">↺ Refresh Status</button>
+          </div>
+          <div class="data-rows">
+            <div class="data-row">
+              <span class="dl">Bot Tag</span>
+              <span class="dv" id="adminBotTag">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Ping</span>
+              <span class="dv accent-green-text" id="adminBotPing">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Uptime</span>
+              <span class="dv" id="adminBotUptime">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Guild</span>
+              <span class="dv dv-muted" id="adminGuildName">--</span>
+            </div>
+            <div class="data-row">
+              <span class="dl">Members</span>
+              <span class="dv" id="adminMemberCount">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Embed Control card -->
+        <div class="card admin-card">
+          <div class="card-header">Embed Control</div>
+          <div class="admin-btn-stack">
+            <button class="admin-action-btn admin-btn-full" id="adminRefreshEmbedsBtn">↺ Refresh All Embeds</button>
+            <button class="admin-action-btn admin-btn-full" id="adminRefreshBannersBtn">↺ Refresh Banner URLs</button>
+            <button class="admin-action-btn admin-btn-full" id="adminForceDigestBtn">▶ Force Post Digest</button>
+          </div>
+          <div class="admin-section-label">Leaderboards</div>
+          <div class="admin-btn-grid">
+            <button class="admin-action-btn" data-admin-leaderboard="solo">Solo Board</button>
+            <button class="admin-action-btn" data-admin-leaderboard="street">Street Board</button>
+            <button class="admin-action-btn" data-admin-leaderboard="circuit">Circuit Board</button>
+            <button class="admin-action-btn" data-admin-leaderboard="teams">Teams Board</button>
+          </div>
+        </div>
+
+        <!-- Announce card -->
+        <div class="card admin-card">
+          <div class="card-header">Announcements</div>
+          <div class="sf-row">
+            <label class="sf-label">Message</label>
+            <textarea class="sf-input admin-announce-textarea" id="adminAnnounceText" placeholder="Write your announcement here…" maxlength="2000" rows="5"></textarea>
+            <div class="sf-hint">Posts to #announcements in Discord.</div>
+          </div>
+          <button class="admin-action-btn admin-btn-full admin-btn-post" id="adminAnnounceBtn">▶ Post Announcement</button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

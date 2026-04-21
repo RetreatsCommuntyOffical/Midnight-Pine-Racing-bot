@@ -329,7 +329,9 @@ async function handleUiButton(interaction) {
 
             const { teamEmbed } = require('./theme');
             const embed = teamEmbed({
-                title:  `👥 Team: ${team.name}`,
+                title:     `👥 Team: ${team.name}`,
+                thumbnail: team.iconUrl   || undefined,
+                image:     team.bannerUrl || undefined,
                 fields: [
                     { name: '🏆 Total Points', value: String(team.totalPoints),          inline: true  },
                     { name: '🥇 Wins',         value: String(team.teamWins),             inline: true  },
