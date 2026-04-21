@@ -7,6 +7,10 @@ const { applyTransaction } = require('../economy/service');
 const { applyMembershipBoosts, syncMembership } = require('../membership/service');
 const { recordChallengeMetric } = require('../challenges/service');
 const { getTierFromPoints } = require('../racing/points');
+const {
+    dispatchLevelUp,
+    dispatchBigScore,
+} = require('../notifications/dispatcher');
 
 function validateIngestEvent(eventType, payload = {}) {
     if (!eventType) return { ok: false, reason: 'missing_event_type' };
@@ -59,7 +63,7 @@ async function processDriftPoints({ discordId, payload }) {
     profile.tier = getTierFromPoints(profile.totalPoints);
     await profile.save();
 
-    await awardXp({ discordId, amount: boosted.xp, reason: 'integration_drift_points' });
+    const progression = await awardXp({ discordId, amount: boosted.xp, reason: 'integration_drift_points' });
     await applyTransaction({
         discordId,
         amount: boosted.coins,
@@ -70,6 +74,18 @@ async function processDriftPoints({ discordId, payload }) {
     });
 
     await recordChallengeMetric({ discordId, metric: 'drift_points', amount: points });
+
+    // ── Notifications (fire-and-forget) ──────────────────────────────────────
+    const dName = payload.displayName || profile.displayName;
+    if (progression?.leveledUp) {
+        dispatchLevelUp({
+            discordId,
+            displayName: dName,
+            oldLevel: progression.oldLevel,
+            newLevel: progression.newLevel,
+        }).catch(() => null);
+    }
+    dispatchBigScore({ discordId, displayName: dName, points }).catch(() => null);
 }
 
 async function processEventWin({ discordId }) {

@@ -14,6 +14,7 @@ const {
 
 const STAFF_ROLE_NAMES = ['👑 Admin', '🔧 Staff', '🛡️ Moderator', '🎙️ Host'];
 const HUB_EMBED_TITLE  = '🏁 Team Hub';
+const TEAM_HUB_BANNER_URL = String(process.env.TEAM_HUB_BANNER_URL || '').trim();
 
 // In-memory dedup: userId → Set of open types ('apply' | 'create')
 const openHubChannels = new Map();
@@ -21,9 +22,7 @@ const openHubChannels = new Map();
 // ── Post or edit the persistent hub embed ────────────────────────────────────
 async function postTeamHubEmbed(client, channelId) {
     channelId = channelId || process.env.TEAM_HUB_CHANNEL_ID;
-    if (!channelId) return;
-
-    const channel = await client.channels.fetch(channelId).catch(() => null);
+    const channel = await resolveHubChannel(client, channelId, '👥┃team-hub');
     if (!channel || !channel.isTextBased()) {
         console.warn('[teamHub] Channel not found or not text-based:', channelId);
         return;
@@ -52,6 +51,8 @@ async function postTeamHubEmbed(client, channelId) {
         .setFooter({ text: 'Midnight Pine Racing  •  Team Hub' })
         .setTimestamp();
 
+    if (TEAM_HUB_BANNER_URL) embed.setImage(TEAM_HUB_BANNER_URL);
+
     const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
             .setCustomId('teamhub_apply')
@@ -65,32 +66,52 @@ async function postTeamHubEmbed(client, channelId) {
             .setStyle(ButtonStyle.Primary),
     );
 
-    const existing = await fetchHubMessage(channel, client);
-    if (existing) {
-        await existing.edit({ embeds: [embed], components: [row] }).catch(() => null);
+    const matches = await fetchHubMessages(channel, client);
+    let primary = matches[0] || null;
+
+    if (primary) {
+        await primary.edit({ embeds: [embed], components: [row] }).catch(() => null);
         console.log('[teamHub] Hub embed updated in channel', channelId);
     } else {
-        await channel.send({ embeds: [embed], components: [row] });
+        primary = await channel.send({ embeds: [embed], components: [row] }).catch(() => null);
         console.log('[teamHub] Hub embed posted to channel', channelId);
+    }
+
+    if (!primary) return;
+    for (const duplicate of matches.slice(1)) {
+        await duplicate.delete().catch(() => null);
     }
 }
 
-async function fetchHubMessage(channel, client) {
+async function resolveHubChannel(client, preferredId, fallbackName) {
+    if (preferredId) {
+        const byId = await client.channels.fetch(preferredId).catch(() => null);
+        if (byId && byId.isTextBased()) return byId;
+    }
+
+    const guild = client.guilds.cache.get(process.env.HOME_GUILD_ID) || client.guilds.cache.first();
+    if (!guild) return null;
+
+    await guild.channels.fetch().catch(() => null);
+    return guild.channels.cache.find((c) => c.isTextBased() && c.name === fallbackName) || null;
+}
+
+async function fetchHubMessages(channel, client) {
+    const matches = [];
     let before;
     for (let page = 0; page < 5; page++) {
         const opts = { limit: 100 };
         if (before) opts.before = before;
         const msgs = await channel.messages.fetch(opts).catch(() => null);
         if (!msgs || msgs.size === 0) break;
-        const found = msgs.find(
-            m => m.author.id === client.user.id &&
-                 m.embeds.length > 0 &&
-                 m.embeds[0].title === HUB_EMBED_TITLE,
-        );
-        if (found) return found;
+        for (const msg of msgs.values()) {
+            if (msg.author.id === client.user.id && msg.embeds.length > 0 && msg.embeds[0].title === HUB_EMBED_TITLE) {
+                matches.push(msg);
+            }
+        }
         before = msgs.last().id;
     }
-    return null;
+    return matches.sort((a, b) => b.createdTimestamp - a.createdTimestamp);
 }
 
 // ── Modal: Apply to Team ──────────────────────────────────────────────────────

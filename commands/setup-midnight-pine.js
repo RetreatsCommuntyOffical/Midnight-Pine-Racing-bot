@@ -3,6 +3,9 @@ const { refreshAllLeaderboards } = require('../core/racing/leaderboardPoster');
 const { postTeamHubEmbed } = require('../core/teamHubService');
 const { postSupportHubEmbed } = require('../core/ticketService');
 
+const WELCOME_BANNER_URL = String(process.env.WELCOME_BANNER_URL || '').trim();
+const ROLE_SELECTION_BANNER_URL = String(process.env.ROLE_SELECTION_BANNER_URL || '').trim();
+
 const ROLES = [
     // ── Staff hierarchy ──────────────────────────────────────────────────────
     { name: '👑 Admin',             color: 0xfdcb6e, hoist: true,  position: 1  },
@@ -231,20 +234,32 @@ async function ensureStructure(guild, staffRoles, results) {
 }
 
 async function upsertBotEmbed(channel, client, embed, components = []) {
+    const matches = [];
     let before;
     for (let page = 0; page < 5; page++) {
         const batch = await channel.messages.fetch({ limit: 100, ...(before ? { before } : {}) }).catch(() => null);
         if (!batch || batch.size === 0) break;
-        const existing = batch.find(
-            (m) => m.author.id === client.user.id && m.embeds.length > 0 && m.embeds[0].title === embed.data.title
-        );
-        if (existing) {
-            await existing.edit({ embeds: [embed], components }).catch(() => null);
-            return;
+        for (const msg of batch.values()) {
+            if (msg.author.id === client.user.id && msg.embeds.length > 0 && msg.embeds[0].title === embed.data.title) {
+                matches.push(msg);
+            }
         }
         before = batch.last().id;
     }
-    await channel.send({ embeds: [embed], components }).catch(() => null);
+
+    let primary = matches.sort((a, b) => b.createdTimestamp - a.createdTimestamp)[0] || null;
+    if (primary) {
+        await primary.edit({ embeds: [embed], components }).catch(() => null);
+    } else {
+        primary = await channel.send({ embeds: [embed], components }).catch(() => null);
+    }
+
+    if (!primary) return;
+
+    for (const duplicate of matches) {
+        if (duplicate.id === primary.id) continue;
+        await duplicate.delete().catch(() => null);
+    }
 }
 
 async function refreshLayoutEmbeds(client, guild, results) {
@@ -263,6 +278,7 @@ async function refreshLayoutEmbeds(client, guild, results) {
             ].join('\n'))
             .setFooter({ text: 'Midnight Pine Racing' })
             .setTimestamp();
+        if (WELCOME_BANNER_URL) welcomeEmbed.setImage(WELCOME_BANNER_URL);
         await upsertBotEmbed(welcomeChannel, client, welcomeEmbed);
         results.embeds.push('Welcome');
         await new Promise((r) => setTimeout(r, 1200));
@@ -283,6 +299,7 @@ async function refreshLayoutEmbeds(client, guild, results) {
                 '━━━━━━━━━━━━━━━━━━\n' +
                 '_Click to add or remove. Toggle anytime._'
             );
+            if (ROLE_SELECTION_BANNER_URL) roleEmbed.setImage(ROLE_SELECTION_BANNER_URL);
 
         const row1 = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('role_street').setLabel('🏎️ Street Driver').setStyle(ButtonStyle.Secondary),

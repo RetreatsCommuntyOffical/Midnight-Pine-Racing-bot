@@ -1,7 +1,13 @@
 'use strict';
 const RaceEventSchedule = require('../../models/RaceEventSchedule');
+const DailyDigestState  = require('../../models/DailyDigestState');
 const { processScheduledReleases } = require('./releaseService');
+const { processDailyDigest } = require('./dailyDigestService');
+const { resetWeeklyPoints, getLeaderboard } = require('./service');
+const { dispatchWeeklyReset } = require('../notifications/dispatcher');
 const { eventEmbed, rows, Buttons, ts } = require('../ui/theme');
+
+const WEEKLY_RESET_STATE_KEY = 'weekly-reset';
 
 let timer = null;
 
@@ -63,13 +69,61 @@ async function processReminders(client) {
     }
 }
 
+// ── Weekly leaderboard reset ──────────────────────────────────────────────────
+// Runs every Monday at or after 09:00 UTC. Uses DailyDigestState for idempotency.
+
+async function processWeeklyReset() {
+    const now = new Date();
+    // UTC weekday: 0=Sunday … 1=Monday
+    if (now.getUTCDay() !== 1) return;
+    // Only run at/after 09:00 UTC
+    if (now.getUTCHours() < 9) return;
+
+    // ISO week key: e.g. "2026-W17"
+    const jan1 = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+    const weekNum = Math.ceil(((now - jan1) / 86400000 + jan1.getUTCDay() + 1) / 7);
+    const weekKey = `${now.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+
+    let state = await DailyDigestState.findOne({ digestKey: WEEKLY_RESET_STATE_KEY });
+    if (state?.lastPostedDate === weekKey) return; // already ran this week
+
+    // Capture top drivers BEFORE reset for the announcement
+    let topDrivers = [];
+    try {
+        const top = await getLeaderboard('solo', 3, true);
+        topDrivers = top.map((p) => ({
+            displayName: p.displayName || p.discordId,
+            weeklyPoints: p.weeklyPoints || 0,
+        }));
+    } catch { /* non-fatal */ }
+
+    await resetWeeklyPoints();
+    console.log(`[weekly-reset] Weekly boards reset for ${weekKey}`);
+
+    await dispatchWeeklyReset({ topDrivers }).catch(() => null);
+
+    if (!state) {
+        await DailyDigestState.create({
+            digestKey: WEEKLY_RESET_STATE_KEY,
+            lastPostedDate: weekKey,
+            lastPostedAt: new Date(),
+        });
+    } else {
+        state.lastPostedDate = weekKey;
+        state.lastPostedAt   = new Date();
+        await state.save();
+    }
+}
+
 function startScheduler(client) {
     if (timer) return;
     timer = setInterval(() => {
         processReminders(client).catch(() => null);
         processScheduledReleases(client).catch(() => null);
+        processDailyDigest(client).catch(() => null);
+        processWeeklyReset().catch(() => null);
     }, 60000);
-    console.log('✅ Event + release scheduler started (60s tick)');
+    console.log('✅ Event + release + daily digest + weekly reset scheduler started (60s tick)');
 }
 
 function stopScheduler() {

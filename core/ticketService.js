@@ -225,12 +225,16 @@ module.exports = { ticketService, TICKET_TYPES, postSupportHubEmbed };
 
 // ── Post or edit the persistent Support Hub embed ─────────────────────────────
 const SUPPORT_HUB_TITLE = '🏁 MIDNIGHT PINE RACING — SUPPORT HUB 🏁';
+const SUPPORT_HUB_BANNER_URL = String(process.env.SUPPORT_HUB_BANNER_URL || '').trim();
 
 async function postSupportHubEmbed(client, channelId) {
     channelId = channelId || process.env.SUPPORT_HUB_CHANNEL_ID;
-    if (!channelId) return;
-
-    const channel = await client.channels.fetch(channelId).catch(() => null);
+    const channel = await resolveHubChannel(client, channelId, [
+        '🎫┃support-hub',
+        '📋┃ticket-panel',
+        'support-hub',
+        'ticket-panel',
+    ]);
     if (!channel || !channel.isTextBased()) {
         console.warn('[supportHub] Channel not found or not text-based:', channelId);
         return;
@@ -271,6 +275,8 @@ async function postSupportHubEmbed(client, channelId) {
         ].join('\n'))
         .setFooter({ text: 'Midnight Pine Racing  •  Support Hub' });
 
+    if (SUPPORT_HUB_BANNER_URL) embed.setImage(SUPPORT_HUB_BANNER_URL);
+
     const row1 = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('ticket_open_support').setLabel('General Support').setEmoji('🏎️').setStyle(ButtonStyle.Primary),
         new ButtonBuilder().setCustomId('ticket_open_join').setLabel('Join the Team').setEmoji('🧑‍🔧').setStyle(ButtonStyle.Success),
@@ -281,30 +287,61 @@ async function postSupportHubEmbed(client, channelId) {
         new ButtonBuilder().setCustomId('ticket_open_partner').setLabel('Partnerships').setEmoji('🤝').setStyle(ButtonStyle.Success),
     );
 
-    const existing = await _fetchSupportHubMessage(channel, client);
-    if (existing) {
-        await existing.edit({ embeds: [embed], components: [row1, row2] }).catch(() => null);
+    const matches = await _fetchSupportHubMessages(channel, client);
+    let primary = matches[0] || null;
+
+    if (primary) {
+        await primary.edit({ embeds: [embed], components: [row1, row2] }).catch(() => null);
         console.log('[supportHub] Hub embed updated in channel', channelId);
     } else {
-        await channel.send({ embeds: [embed], components: [row1, row2] });
+        primary = await channel.send({ embeds: [embed], components: [row1, row2] }).catch(() => null);
         console.log('[supportHub] Hub embed posted to channel', channelId);
+    }
+
+    if (!primary) return;
+    for (const duplicate of matches.slice(1)) {
+        await duplicate.delete().catch(() => null);
     }
 }
 
-async function _fetchSupportHubMessage(channel, client) {
+async function resolveHubChannel(client, preferredId, fallbackNames) {
+    if (preferredId) {
+        const byId = await client.channels.fetch(preferredId).catch(() => null);
+        if (byId && byId.isTextBased()) return byId;
+    }
+
+    const guild = client.guilds.cache.get(process.env.HOME_GUILD_ID) || client.guilds.cache.first();
+    if (!guild) return null;
+
+    await guild.channels.fetch().catch(() => null);
+    const targets = Array.isArray(fallbackNames) ? fallbackNames : [fallbackNames];
+
+    for (const target of targets) {
+        const exact = guild.channels.cache.find((c) => c.isTextBased() && c.name === target);
+        if (exact) return exact;
+    }
+
+    return guild.channels.cache.find((c) => {
+        if (!c.isTextBased()) return false;
+        const name = String(c.name || '').toLowerCase();
+        return name.includes('support-hub') || name.includes('ticket-panel');
+    }) || null;
+}
+
+async function _fetchSupportHubMessages(channel, client) {
+    const matches = [];
     let before;
     for (let page = 0; page < 5; page++) {
         const opts = { limit: 100 };
         if (before) opts.before = before;
         const msgs = await channel.messages.fetch(opts).catch(() => null);
         if (!msgs || msgs.size === 0) break;
-        const found = msgs.find(
-            m => m.author.id === client.user.id &&
-                 m.embeds.length > 0 &&
-                 m.embeds[0].title === SUPPORT_HUB_TITLE,
-        );
-        if (found) return found;
+        for (const msg of msgs.values()) {
+            if (msg.author.id === client.user.id && msg.embeds.length > 0 && msg.embeds[0].title === SUPPORT_HUB_TITLE) {
+                matches.push(msg);
+            }
+        }
         before = msgs.last().id;
     }
-    return null;
+    return matches.sort((a, b) => b.createdTimestamp - a.createdTimestamp);
 }

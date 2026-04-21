@@ -5,10 +5,12 @@
     "main": "bot.js",
     "scripts": {
         "start": "node bot.js",
-        "test": "node --test core/racing/points.test.js",
+        "test": "node --test core/racing/points.test.js core/racing/dailyDigestService.test.js",
         "deploy:commands": "node deploy-commands.js",
+        "digest:post-now": "node scripts/post-daily-digest-now.js",
         "force:update-all": "node scripts/force-update-all.js",
-        "publish:banners": "node scripts/publish-banners.js"
+        "publish:banners": "node scripts/publish-banners.js",
+        "clean:embeds": "node scripts/clean-bot-embeds.js"
     },
     "engines": {
         "node": ">=18.0.0"
@@ -16,6 +18,7 @@
     "dependencies": {
         "discord.js": "^14.16.0",
         "dotenv": "^16.4.5",
+        "mongodb": "^7.1.1",
         "mongoose": "^7.8.0"
     }
 }

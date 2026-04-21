@@ -10,6 +10,11 @@ const { applyTransaction } = require('../economy/service');
 const { applyMembershipBoosts } = require('../membership/service');
 const { recordChallengeMetric } = require('../challenges/service');
 const {
+    dispatchLevelUp,
+    dispatchPersonalBest,
+    dispatchBigScore,
+} = require('../notifications/dispatcher');
+const {
     calculateNoHesiPoints,
     getCircuitPointsByPosition,
     getTierFromPoints,
@@ -180,6 +185,21 @@ async function submitRun(params) {
             });
             await recordChallengeMetric({ discordId, metric: 'drift_points', amount: points.total });
             if (cleanRun) await recordChallengeMetric({ discordId, metric: 'clean_runs', amount: 1 });
+
+            // ── Notifications (fire-and-forget) ──────────────────────────────
+            const dName = displayName || profile.displayName;
+            if (progression?.leveledUp) {
+                dispatchLevelUp({
+                    discordId,
+                    displayName: dName,
+                    oldLevel: progression.oldLevel,
+                    newLevel: progression.newLevel,
+                }).catch(() => null);
+            }
+            if (Number(topSpeed) > Number(profile.bestNoHesiTopSpeed || 0)) {
+                dispatchPersonalBest({ discordId, displayName: dName, metric: 'top_speed', value: topSpeed }).catch(() => null);
+            }
+            dispatchBigScore({ discordId, displayName: dName, points: points.total }).catch(() => null);
         } catch (err) {
             console.warn('Reward processing failed for run submission:', err.message);
         }

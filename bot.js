@@ -22,7 +22,9 @@ const { postTeamHubEmbed } = require('./core/teamHubService');
 const { postSupportHubEmbed } = require('./core/ticketService');
 const { startIntegrationWebhookServer } = require('./core/integration/webhookServer');
 const { setDiscordClient }               = require('./core/integration/webhookServer');
+const { setDiscordClient: setNotifClient } = require('./core/notifications/dispatcher');
 const { startLinuxEmbedSyncScheduler }   = require('./core/integration/linuxEmbedSync');
+const { startLiveServersScheduler }      = require('./core/integration/liveServersService');
 const { handleMemberJoin }               = require('./core/welcomeService');
 const { seedDefaultStations }            = require('./core/music/stationManager');
 
@@ -52,6 +54,7 @@ async function main() {
     client.once('clientReady', () => {
         installDiscordLogRelay(client, process.env.BOT_LOGS_CHANNEL_ID);
         setDiscordClient(client);
+        setNotifClient(client);
         console.log(`✅ ${client.user.tag} online — ${commands.size} commands loaded`);
 
         startScheduler(client);
@@ -67,6 +70,8 @@ async function main() {
         postOrUpdateTeamRoster(client, guild).catch(() => null);
         postTeamHubEmbed(client, process.env.TEAM_HUB_CHANNEL_ID).catch(() => null);
         postSupportHubEmbed(client, process.env.SUPPORT_HUB_CHANNEL_ID).catch(() => null);
+
+        startLiveServersScheduler(client);
 
         const linuxSyncTimer = startLinuxEmbedSyncScheduler(client);
         if (linuxSyncTimer) {

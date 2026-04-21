@@ -1,0 +1,13 @@
+# AssettoServer Discord Integration Config
+# Deploy to: /home/harperlinux/assettoserver-traffic/cfg/discord.yml
+
+BotToken: YOUR_ASSETTOSERVER_BOT_TOKEN_HERE
+
+GuildId: YOUR_GUILD_ID_HERE              # Right-click server name → Copy Server ID
+
+Channels:
+  PlayerNotifications: YOUR_PLAYER_NOTIF_CHANNEL_ID_HERE   # Right-click channel → Copy Channel ID
+  Leaderboard: YOUR_LEADERBOARD_CHANNEL_ID_HERE            # Right-click channel → Copy Channel ID
+
+# To find IDs: Discord Settings → Advanced → Enable Developer Mode
+# Then right-click server/channel and choose "Copy ID"

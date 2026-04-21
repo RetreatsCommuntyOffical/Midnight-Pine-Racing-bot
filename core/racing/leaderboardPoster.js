@@ -7,6 +7,7 @@ const SOLO_BANNER_URL    = process.env.SOLO_BOARD_BANNER_URL    || process.env.L
 const STREET_BANNER_URL  = process.env.STREET_BOARD_BANNER_URL  || process.env.LEADERBOARDS_BANNER_URL || '';
 const CIRCUIT_BANNER_URL = process.env.CIRCUIT_BOARD_BANNER_URL || process.env.LEADERBOARDS_BANNER_URL || '';
 const TEAMS_BANNER_URL   = process.env.TEAMS_BANNER_URL          || process.env.LEADERBOARDS_BANNER_URL || '';
+const PIN_LEADERBOARD_MESSAGES = String(process.env.PIN_LEADERBOARD_MESSAGES || 'false').toLowerCase() === 'true';
 
 const BANNER_MAP = {
     solo:    SOLO_BANNER_URL,
@@ -151,12 +152,15 @@ async function postLeaderboardToChannel(client, guild, type, weekly = false) {
 
     const pinned = await channel.messages.fetchPins().catch(() => null);
     for (const msg of pinnedMessagesToArray(pinned)) {
-        if (msg.author.id === client.user.id && msg.id !== primary.id) {
+        if (msg.author.id !== client.user.id) continue;
+        if (!PIN_LEADERBOARD_MESSAGES || msg.id !== primary.id) {
             await msg.unpin().catch(() => null);
         }
     }
 
-    if (!primary.pinned) await primary.pin().catch(() => null);
+    if (PIN_LEADERBOARD_MESSAGES && !primary.pinned) {
+        await primary.pin().catch(() => null);
+    }
 }
 
 async function refreshAllLeaderboards(client, guild) {

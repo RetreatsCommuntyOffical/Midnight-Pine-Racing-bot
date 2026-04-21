@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const { Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
 const { refreshAllLeaderboards } = require('../core/racing/leaderboardPoster');
 const { postOrUpdateTeamRoster } = require('../core/racing/teamRosterPoster');
+const { postTeamHubEmbed } = require('../core/teamHubService');
+const { postSupportHubEmbed } = require('../core/ticketService');
 
 const ROOT = path.resolve(__dirname, '..');
 const ENV_PATH = path.join(ROOT, '.env');
@@ -16,6 +18,10 @@ const FILE_HINTS = {
     STREET_BOARD_BANNER_URL: ['street-board', 'street_board', 'street board', 'street'],
     CIRCUIT_BOARD_BANNER_URL: ['circuit-board', 'circuit_board', 'circuit board', 'circuit'],
     TEAMS_BANNER_URL: ['team-board', 'team_board', 'team board', 'teams-board', 'teams board', 'team', 'teams'],
+    WELCOME_BANNER_URL: ['welcome-banner', 'welcome_banner', 'welcome'],
+    ROLE_SELECTION_BANNER_URL: ['role-selection-banner', 'role_selection_banner', 'role-selection', 'roles-banner', 'role'],
+    SUPPORT_HUB_BANNER_URL: ['support-hub-banner', 'support_hub_banner', 'support-hub', 'support'],
+    TEAM_HUB_BANNER_URL: ['team-hub-banner', 'team_hub_banner', 'team-hub'],
 };
 
 const BOARD_CHANNEL_NAMES = new Set([
@@ -150,6 +156,8 @@ async function run() {
 
         await refresh(client, guild);
         await refreshRoster(client, guild);
+        await postTeamHubEmbed(client, process.env.TEAM_HUB_CHANNEL_ID).catch(() => null);
+        await postSupportHubEmbed(client, process.env.SUPPORT_HUB_CHANNEL_ID).catch(() => null);
         console.log('Leaderboards and team roster refreshed with live banner URLs');
     } finally {
         client.destroy();
